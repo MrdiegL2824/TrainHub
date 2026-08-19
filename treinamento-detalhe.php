@@ -54,7 +54,6 @@ $modulos = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($curso) ?></title>
-    <!-- Alpine.js carregado de forma assíncrona para gerenciar a interatividade -->
     <script defer src="https://jsdelivr.net"></script>
 
     <style>
@@ -72,7 +71,6 @@ $modulos = [
             height: 100vh;
         }
 
-        /* 1. ESTILIZAÇÃO DO CABEÇALHO */
         .header {
             height: 48px;
             background: #e2e8f0;
@@ -189,7 +187,6 @@ $modulos = [
             overflow-y: auto;
         }
 
-        /* 3. BARRA LATERAL DE MÓDULOS */
         .sidebar {
             width: 290px;
             background: #edf1f7;
@@ -327,20 +324,16 @@ $modulos = [
             flex-shrink: 0;
         }
 
-        /* CUSTOMIZAÇÃO DE SCROLL */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 
-<!-- Alpine.js inicializa com o Módulo 4 aberto conforme o seu print -->
 <body class="bg-[#f8fafc]" x-data="{ moduloAberto: 4 }">
 
-    <!-- 1. BARRA SUPERIOR (NAVBAR) -->
     <header class="header">
         <div class="logo-area">
-            <!-- Ícone de Rede/Nó Superior Esquerdo Conforme a Imagem -->
                 <div class="barra-logo">
                 <img src="assets/logo.png" alt="Logo">
                 <span>TrainHub</span>
@@ -365,7 +358,4 @@ $modulos = [
         </div>
     </header>
 
-    <!-- 2. LAYOUT DO CONTEÚDO -->
     <div class="page">
-        
-        <!-- ÁREA CENTRAL DA ESQUERDA (PLAYER / BRANCO) -->
