@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS sessoes (
 CREATE INDEX IF NOT EXISTS idx_treinamentos_area ON treinamentos(area_id);
 CREATE INDEX IF NOT EXISTS idx_treinamentos_status ON treinamentos(status);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_treinamentos_titulo_unique ON treinamentos(titulo);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_areas_nome_unique ON areas(nome);
 CREATE INDEX IF NOT EXISTS idx_aulas_treinamento ON aulas(treinamento_id);
 CREATE INDEX IF NOT EXISTS idx_materiais_aula ON materiais(aula_id);
 CREATE INDEX IF NOT EXISTS idx_sessoes_expira_em ON sessoes(expira_em);
@@ -105,7 +106,20 @@ VALUES
     ('Tecnologia da Informação', 'Redes, sistemas, programação e segurança.', '#065F46'),
     ('Segurança do Trabalho', 'NRs, EPIs, análise de risco e prevenção.', '#92400E'),
     ('Gestão e Negócios', 'Liderança, projetos e processos organizacionais.', '#5B21B6')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (nome) DO NOTHING;
+
+INSERT INTO areas (nome, descricao, cor)
+VALUES
+    ('Sistemas', 'Sistemas operacionais, desenvolvimento e arquitetura.', '#1E3A8A'),
+    ('Redes', 'Conectividade, infraestrutura e comunicação de dados.', '#075985'),
+    ('Segurança', 'Proteção de dados, redes e ambientes digitais.', '#0369A1'),
+    ('Banco de Dados', 'Modelagem, consultas e administração de dados.', '#1D4ED8'),
+    ('IA', 'Inteligência artificial, dados e automação inteligente.', '#6D28D9'),
+    ('Web', 'Aplicações web, front-end e experiência digital.', '#2563EB'),
+    ('Automação', 'Robótica, processos industriais e controle.', '#B45309'),
+    ('Eletrônica', 'Circuitos, componentes e sistemas eletrônicos.', '#0F766E'),
+    ('Gestão', 'Gestão de projetos, pessoas e resultados.', '#92400E')
+ON CONFLICT (nome) DO NOTHING;
 
 INSERT INTO treinamentos (area_id, criado_por, titulo, descricao, carga_horaria, status)
 SELECT a.id, u.id, dados.titulo, dados.descricao, dados.carga_horaria, 'publicado'
