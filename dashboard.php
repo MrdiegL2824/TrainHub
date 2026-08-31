@@ -3,129 +3,24 @@ require_once 'config.php';
 exigirLogin();
 
 try {
-    $total_treinamentos = $pdo->query("SELECT COUNT(*) FROM treinamentos")->fetchColumn();
-    $total_aulas = $pdo->query("SELECT COUNT(*) FROM aulas")->fetchColumn();
-    $total_materiais = $pdo->query("SELECT COUNT(*) FROM materiais")->fetchColumn();
-
-    $metricas = [
-        'treinamentos' => $total_treinamentos,
-        'aulas'        => $total_aulas,
-        'materiais'    => $total_materiais
-    ];
-
-    $sql = "SELECT 
-                t.id, 
-                a.nome AS categoria, 
-                t.titulo, 
-                t.descricao,
-                50 AS progresso
-            FROM treinamentos t
-            INNER JOIN areas a ON t.area_id = a.id
-            ORDER BY t.criado_em DESC 
-            LIMIT 3";
-            
-    $stmt = $pdo->query($sql);
-    $cursos_recentes = $stmt->fetchAll();
-    
-} catch (PDOException $e) {
-    $metricas = ['treinamentos' => 0, 'aulas' => 0, 'materiais' => 0];
-    $cursos_recentes = [];
+    $totalTreinamentos = (int) $pdo->query('SELECT COUNT(*) FROM treinamentos')->fetchColumn();
+    $areas = $pdo->query('SELECT id, nome, descricao, cor FROM areas ORDER BY nome')->fetchAll();
+    $stmt = $pdo->query('SELECT t.id, t.titulo, t.descricao, t.carga_horaria, t.status, a.nome AS area_nome FROM treinamentos t JOIN areas a ON a.id=t.area_id ORDER BY t.criado_em DESC LIMIT 6');
+    $cursos = $stmt->fetchAll();
+    $totalAulas = (int) $pdo->query('SELECT COUNT(*) FROM aulas')->fetchColumn();
+} catch (Throwable $e) {
     error_log('TrainHub dashboard query failed: ' . $e->getMessage());
+    $totalTreinamentos = 0; $totalAulas = 0; $areas = []; $cursos = [];
 }
-?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrainHub - Painel</title>
-    <link rel="stylesheet" href="css/estilos.css?v=1.4">
-</head>
-<body class="painel-corpo">
-
-    <aside class="barra-lateral">
-        <div>
-            <div class="barra-logo">
-                <img src="assets/logo.png" alt="Logo">
-                <span>TrainHub</span>
-            </div>
-            <nav class="navegacao-lateral">
-                <a href="dashboard.php" class="link-navegacao ativo">Inicio</a>
-                <a href="treinamentos.php" class="link-navegacao">Treinamentos</a>
-                <a href="areas.php" class="link-navegacao">Áreas</a>
-                <a href="competencias.php" class="link-navegacao">Competências</a>
-                <a href="aulas.php" class="link-navegacao">Aulas</a>
-                <a href="usuarios.php" class="link-navegacao">Usuarios</a>
-            </nav>
-        </div>
-        <div class="menu-inferior">
-            <div class="info-usuario">
-                <p class="tipo-usuario"><?php echo esc(usuarioPerfil() ?: 'Usuário'); ?></p>
-                <p class="nome-usuario"><?php echo esc($_SESSION['usuario_nome'] ?? ''); ?></p>
-            </div>
-            <a href="logout.php" class="botao-sair">Sair</a>
-        </div>
-    </aside>
-    <main class="conteudo-principal">
-        <header class="cabecalho">
-            <div class="titulo">
-                <p>Bem-vindo ao TrainHub</p>
-                <h1>Painel de treinamentos</h1>
-            </div>
-            <div class="container-pesquisa">
-                <input type="text" placeholder="Pesquisar treinamentos" class="campo-pesquisa">
-            </div>
-        </header>
-
-        <div class="corpo-painel">
-            <div class="grade-metricas">
-                <div class="cartao-metrica">
-                    <p class="rotulo-metrica">Treinamentos</p>
-                    <p class="valor-metrica"><?php echo $metricas['treinamentos']; ?></p>
-                </div>
-                <div class="cartao-metrica">
-                    <p class="rotulo-metrica">Aulas</p>
-                    <p class="valor-metrica"><?php echo $metricas['aulas']; ?></p>
-                </div>
-                <div class="cartao-metrica">
-                    <p class="rotulo-metrica">Materiais</p>
-                    <p class="valor-metrica"><?php echo $metricas['materiais']; ?></p>
-                </div>
-            </div>
-
-            <div class="cabecalho-secao">
-                <h2>Cursos Recentes</h2>
-                <a href="treinamentos.php" class="link-ver-tudo">Ver tudo</a>
-            </div>
-            <div class="grade-cursos">
-                <?php foreach ($cursos_recentes as $curso): ?>
-                    <div class="cartao-curso">
-                        <div>
-                            <span class="categoria-curso"><?php echo esc($curso['categoria']); ?></span>
-                            <h3 class="titulo-curso"><?php echo esc($curso['titulo']); ?></h3>
-                            <p class="descricao-curso"><?php echo esc($curso['descricao']); ?></p>
-                        </div>
-                        
-                        <div class="rodape-curso">
-                            <div class="info-progresso">
-                                <span>Progresso</span>
-                                <span><?php echo $curso['progresso']; ?>%</span>
-                            </div>
-                            <div class="fundo-barra-progresso">
-                                <div class="preenchimento-barra-progresso" style="width: <?php echo $curso['progresso']; ?>%;"></div>
-                            </div>
-                            <div>
-                                <div>
-                                    <a href="treinamento-detalhe.php?id=<?php echo $curso['id']; ?>" class="botao-abrir-curso">Abrir Curso</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
-    </main>
-
-</body>
-</html>
+$progresso = [100, 75, 0];
+$status = ['Concluído', 'Em andamento', 'Encerrado'];
+?><!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TrainHub - Dashboard</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#eef2fb}*{box-sizing:border-box}body{margin:0;background:#273143;min-height:100vh}.topo{height:76px;background:#303949 url('assets/background-TrainHub.png') center 16%/cover no-repeat;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid #3c4658;box-shadow:0 3px 13px #101722}.logo{color:#2f61c4;font-size:25px;font-weight:800;text-decoration:none;text-shadow:0 2px 2px #07101d}.nav{display:flex;gap:8px;align-items:center}.nav a{color:#d6dcec;text-decoration:none;padding:10px 14px;border-radius:10px;font-size:13px}.nav a:hover,.nav .ativo{background:#202838;color:#fff}.usuario{display:flex;gap:12px;align-items:center;font-size:12px}.avatar{width:31px;height:31px;border-radius:50%;background:#080b12 url('assets/logo.png') center/22px no-repeat;border:1px solid #111}.sair{color:#ccd5eb;text-decoration:none}.conteudo{max-width:1120px;margin:0 auto;padding:24px 24px 60px}.cabecalho{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px}.cabecalho h1{font-size:22px;margin:3px 0;color:#fff}.cabecalho p{color:#9da8bc;font-size:12px;margin:0}.cartao{background:#3a465d;border-radius:13px;padding:14px 18px;box-shadow:0 7px 16px rgba(12,19,31,.14)}.secao-topo{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.secao-topo h2{font-size:13px;font-weight:400;margin:0;color:#e1e6f1}.filtros{display:flex;gap:8px;align-items:center}.busca{width:150px;background:#242d3e;border:0;border-radius:12px;color:#e9edf7;padding:5px 10px 5px 28px;font-size:12px;outline:none}.busca::placeholder{color:#b8c0cf}.select{background:#242d3e;color:#e8edf7;border:0;border-radius:12px;padding:5px 8px;font-size:12px}.cursos{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}.curso{min-width:0}.curso-capa{height:118px;border-radius:9px;background:linear-gradient(135deg,#192c52,#121925);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center}.curso-capa:before{content:'';position:absolute;inset:0;background:url('assets/background-TrainHub.png') center/cover;opacity:.19;mix-blend-mode:screen}.curso-capa h3{position:relative;font-size:17px;margin:0;text-shadow:0 2px 3px #000;z-index:1}.progresso-circulo{position:absolute;right:8px;bottom:7px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#202938;border:4px solid #1747ff;font-size:11px;font-weight:bold;z-index:2}.progresso-circulo.zero{border-color:#aeb1b8}.curso-rodape{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px}.concluido{color:#4fd66a}.andamento{color:#ffd21c}.encerrado{color:#ff4848}.link-curso{color:#bfc9df;text-decoration:none;font-size:11px}.areas{margin-top:28px}.grade-areas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 30px}.area{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.area-capa{height:48px;border-radius:8px;background:linear-gradient(135deg,var(--cor),#182132);display:flex;align-items:center;padding:0 14px;position:relative;overflow:hidden}.area-capa:after{content:'';position:absolute;inset:0;background:url('assets/background-TrainHub.png') center/cover;opacity:.22}.area-capa span{position:relative;z-index:1;font-size:16px;text-shadow:0 1px 3px #000}.estrela{color:#fff;font-size:22px}.tag{display:inline-block;background:#8993a5;color:#fff;border-radius:8px;padding:3px 5px;font-size:10px;margin-left:4px}.acoes{margin-top:28px;display:flex;gap:10px}.botao{background:#304fa5;color:#fff;text-decoration:none;border-radius:9px;padding:10px 15px;font-size:12px}.botao:hover{background:#4165c5}@media(max-width:760px){.topo{height:auto;min-height:68px;padding:12px 16px;gap:10px;flex-wrap:wrap}.nav{order:3;width:100%;overflow:auto}.nav a{padding:7px 9px}.usuario{margin-left:auto}.conteudo{padding:18px 14px 40px}.cabecalho{align-items:start;gap:12px;flex-direction:column}.cursos,.grade-areas{grid-template-columns:repeat(2,1fr);gap:18px 12px}.filtros{width:100%}.busca{flex:1}}@media(max-width:450px){.cursos,.grade-areas{grid-template-columns:1fr}.secao-topo{align-items:start;gap:8px;flex-direction:column}.filtros{width:100%}}
+</style></head><body>
+<header class="topo"><a class="logo" href="dashboard.php">TrainHub</a><nav class="nav"><a class="ativo" href="dashboard.php">Dashboard</a><a href="treinamentos.php">Treinamentos</a><a href="areas.php">Áreas</a><a href="aulas.php">Aulas</a><?php if (temPerfil('admin')): ?><a href="usuarios.php">Usuários</a><?php endif; ?></nav><div class="usuario"><span><?php echo esc($_SESSION['usuario_nome'] ?? 'Usuário'); ?></span><span class="avatar" aria-hidden="true"></span><a class="sair" href="logout.php">↪</a></div></header>
+<main class="conteudo"><div class="cabecalho"><div><p>Bem-vindo ao TrainHub</p><h1>Continue sua jornada de aprendizagem</h1></div><div class="acoes"><a class="botao" href="treinamentos.php">+ Novo treinamento</a></div></div>
+<section class="cartao"><div class="secao-topo"><h2>Meus Cursos <span class="tag"><?php echo $totalTreinamentos; ?></span></h2><div class="filtros"><input class="busca filtro" data-alvo="curso" type="search" placeholder="⌕  Pesquisar"><select class="select filtro" data-alvo="curso"><option value="">Todos⌄</option><option value="concluído">Concluído</option><option value="em andamento">Em andamento</option><option value="encerrado">Encerrado</option></select></div></div><div class="cursos" id="lista-cursos"><?php foreach ($cursos as $i => $curso): $p = $progresso[$i % count($progresso)]; $s = $status[$i % count($status)]; ?><article class="curso item-curso" data-busca="<?php echo esc(strtolower($curso['titulo'].' '.$curso['area_nome'].' '.$s)); ?>"><div class="curso-capa"><h3><?php echo esc($curso['titulo']); ?></h3><span class="progresso-circulo <?php echo $p === 0 ? 'zero' : ''; ?>"><?php echo $p; ?>%</span></div><div class="curso-rodape"><span class="<?php echo $p === 100 ? 'concluido' : ($p === 0 ? 'encerrado' : 'andamento'); ?>"><?php echo $s; ?></span><a class="link-curso" href="treinamento-detalhe.php?id=<?php echo (int) $curso['id']; ?>">Abrir →</a></div></article><?php endforeach; ?></div></section>
+<section class="cartao areas"><div class="secao-topo"><h2>Áreas <span class="tag"><?php echo count($areas); ?></span></h2><div class="filtros"><input class="busca filtro" data-alvo="area" type="search" placeholder="⌕  Pesquisar"><select class="select"><option>Todos⌄</option></select></div></div><div class="grade-areas" id="lista-areas"><?php foreach ($areas as $area): ?><a class="area item-area" href="treinamentos.php" data-busca="<?php echo esc(strtolower($area['nome'].' '.$area['descricao'])); ?>" style="--cor:<?php echo esc($area['cor']); ?>"><div><div class="area-capa"><span><?php echo esc($area['nome']); ?></span></div><span class="tag">STG</span><span class="tag"><?php echo $totalAulas; ?> aulas</span></div><span class="estrela">☆</span></a><?php endforeach; ?></div></section>
+</main><script>document.querySelectorAll('.filtro').forEach(function(campo){campo.addEventListener('input',function(){var alvo=campo.dataset.alvo;var termo=campo.value.toLowerCase();document.querySelectorAll('.item-'+alvo).forEach(function(item){item.style.display=item.dataset.busca.indexOf(termo)>-1?'':'none';});});});</script></body></html>
