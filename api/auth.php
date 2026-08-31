@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__DIR__) . '/config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && validarCsrf($_POST['csrf_token'] ?? null)) {
     
 $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
 $senha = isset($_POST['senha']) ? trim($_POST['senha']) : '';
@@ -24,6 +24,7 @@ $senha = isset($_POST['senha']) ? trim($_POST['senha']) : '';
             $_SESSION['usuario_nome'] = $usuario['nome'];
             $_SESSION['usuario_email'] = $usuario['email'];
             $_SESSION['logado']       = true;
+            $_SESSION['usuario_perfil'] = $usuario['perfil'];
 
             header('Location: ../dashboard.php');
             exit;
@@ -40,6 +41,6 @@ $senha = isset($_POST['senha']) ? trim($_POST['senha']) : '';
     }
 
 } else {
-    header('Location: ../index.php');
+    header('Location: ../index.php?erro=solicitacao');
     exit;
 }

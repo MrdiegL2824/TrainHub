@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 define('APP_NAME', 'TrainHub');
+define('DEMO_MODE', getenv('DEMO_MODE') !== '0');
 
 $databaseUrl = trim((string) (getenv('DATABASE_URL') ?: getenv('NEON_DATABASE_URL') ?: ''));
 $usingPostgres = $databaseUrl !== '';
@@ -67,9 +68,42 @@ function redirecionar(string $caminho): never
     exit;
 }
 
+function esc(mixed $valor): string
+{
+    return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+}
+
+function csrfToken(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return (string) $_SESSION['csrf_token'];
+}
+
+function csrfInput(): string
+{
+    return '<input type="hidden" name="csrf_token" value="' . esc(csrfToken()) . '">';
+}
+
+function validarCsrf(?string $token): bool
+{
+    return is_string($token) && hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $token);
+}
+
 function usuarioLogado(): bool
 {
     return !empty($_SESSION['usuario_id']);
+}
+
+function usuarioPerfil(): string
+{
+    return (string) ($_SESSION['usuario_perfil'] ?? '');
+}
+
+function temPerfil(string ...$perfis): bool
+{
+    return in_array(usuarioPerfil(), $perfis, true);
 }
 
 function exigirLogin(): void

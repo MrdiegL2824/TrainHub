@@ -60,10 +60,10 @@ try {
         </div>
         <div class="menu-inferior">
             <div class="info-usuario">
-                <p class="tipo-usuario">Administrador</p>
-                <p class="nome-usuario">admin</p>
+                <p class="tipo-usuario"><?php echo esc(usuarioPerfil() ?: 'Usuário'); ?></p>
+                <p class="nome-usuario"><?php echo esc($_SESSION['usuario_nome'] ?? ''); ?></p>
             </div>
-            <a onclick="window.location.href='index.php'" class="botao-sair">Sair</a>
+            <a href="logout.php" class="botao-sair">Sair</a>
         </div>
     </aside>
     <main class="conteudo-principal">
@@ -95,15 +95,15 @@ try {
 
             <div class="cabecalho-secao">
                 <h2>Cursos Recentes</h2>
-                <a href="" class="link-ver-tudo">Ver tudo</a>
+                <a href="treinamentos.php" class="link-ver-tudo">Ver tudo</a>
             </div>
             <div class="grade-cursos">
                 <?php foreach ($cursos_recentes as $curso): ?>
                     <div class="cartao-curso">
                         <div>
-                            <span class="categoria-curso"><?php echo $curso['categoria']; ?></span>
-                            <h3 class="titulo-curso"><?php echo $curso['titulo']; ?></h3>
-                            <p class="descricao-curso"><?php echo $curso['descricao']; ?></p>
+                            <span class="categoria-curso"><?php echo esc($curso['categoria']); ?></span>
+                            <h3 class="titulo-curso"><?php echo esc($curso['titulo']); ?></h3>
+                            <p class="descricao-curso"><?php echo esc($curso['descricao']); ?></p>
                         </div>
                         
                         <div class="rodape-curso">

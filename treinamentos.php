@@ -1,74 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrainHub-Treinamentos</title>
-    <link rel="stylesheet" href="css/estilos.css?v=1.6">
-    
-    <style>
-        body {
-            background-color: #b2c0d6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .container-usuarios {
-            background-color: #e5eaf5;
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .titulo-usuarios {
-            color: #3b4766;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-        }
-
-        .btn-voltar {
-            display: inline-block;
-            width: 100%;
-            max-width: 200px;
-            padding: 12px 24px;
-            background-color: #3f5283;
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 16px;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .btn-voltar:hover {
-            background-color: #314067;
-            transform: translateY(-1px);
-        }
-
-        .btn-voltar:active {
-            transform: translateY(0);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container-usuarios">
-        <h1 class="titulo-usuarios">Treinamentos</h1>
-        
-        <div style="margin-bottom: 30px; color: #718096; font-size: 0.95rem;">
-            <p>Gerencie os treinamentos cadastrados no sistema TrainHub aqui.</p>
-        </div>
-
-        <a class="btn-voltar" href="dashboard.php">Voltar ao Painel</a>
-    </div>
-
-</body>
-</html>
+<?php
+require_once 'config.php'; exigirLogin(); $mensagem = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!validarCsrf($_POST['csrf_token'] ?? null)) { $mensagem = 'Sessão expirada. Atualize a página e tente novamente.'; }
+    else { $areaId = (int) ($_POST['area_id'] ?? 0); $titulo = trim((string) ($_POST['titulo'] ?? '')); $descricao = trim((string) ($_POST['descricao'] ?? '')); $carga = max(1, (int) ($_POST['carga_horaria'] ?? 1)); if ($areaId < 1 || $titulo === '') { $mensagem = 'Informe a área e o título do treinamento.'; } else { $stmt = $pdo->prepare('INSERT INTO treinamentos (area_id, criado_por, titulo, descricao, carga_horaria, status) VALUES (?, ?, ?, ?, ?, ?)'); $stmt->execute([$areaId, (int) $_SESSION['usuario_id'], $titulo, $descricao, $carga, 'rascunho']); redirecionar('treinamentos.php?salvo=1'); } }
+}
+$areas = $pdo->query('SELECT id, nome FROM areas ORDER BY nome')->fetchAll(); $treinamentos = $pdo->query('SELECT t.id, t.titulo, t.descricao, t.carga_horaria, t.status, a.nome AS area_nome FROM treinamentos t JOIN areas a ON a.id=t.area_id ORDER BY t.criado_em DESC')->fetchAll(); if (isset($_GET['salvo'])) { $mensagem = 'Treinamento salvo como rascunho.'; }
+?><!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TrainHub - Treinamentos</title><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-slate-100 min-h-screen text-slate-800"><main class="max-w-6xl mx-auto p-6 md:p-10"><div class="flex flex-wrap justify-between items-center gap-4 mb-8"><div><a href="dashboard.php" class="text-blue-700 font-semibold">← Painel</a><h1 class="text-3xl font-bold mt-3">Treinamentos</h1><p class="text-slate-500">Crie e acompanhe o conteúdo da equipe.</p></div><a href="logout.php" class="rounded-xl bg-slate-800 text-white px-4 py-2">Sair</a></div><?php if ($mensagem !== ''): ?><div class="mb-6 rounded-xl bg-blue-50 text-blue-800 px-4 py-3"><?php echo esc($mensagem); ?></div><?php endif; ?><div class="grid lg:grid-cols-3 gap-6"><section class="lg:col-span-2 grid sm:grid-cols-2 gap-4"><?php foreach ($treinamentos as $treinamento): ?><article class="bg-white rounded-2xl p-5 shadow-sm"><span class="text-sm text-blue-700 font-semibold"><?php echo esc($treinamento['area_nome']); ?></span><h2 class="font-bold text-xl mt-2"><?php echo esc($treinamento['titulo']); ?></h2><p class="text-slate-500 mt-2 min-h-12"><?php echo esc($treinamento['descricao'] ?: 'Sem descrição cadastrada.'); ?></p><div class="flex justify-between items-center mt-5 text-sm"><span><?php echo esc($treinamento['carga_horaria']); ?>h · <?php echo esc($treinamento['status']); ?></span><a href="treinamento-detalhe.php?id=<?php echo (int) $treinamento['id']; ?>" class="text-blue-700 font-semibold">Abrir →</a></div></article><?php endforeach; ?></section><form method="post" class="bg-white rounded-2xl p-5 shadow-sm space-y-4 h-fit"><h2 class="font-bold text-xl">Novo treinamento</h2><?php echo csrfInput(); ?><select name="area_id" required class="w-full rounded-xl border p-3"><option value="">Selecione a área</option><?php foreach ($areas as $area): ?><option value="<?php echo (int) $area['id']; ?>"><?php echo esc($area['nome']); ?></option><?php endforeach; ?></select><input name="titulo" required placeholder="Título" class="w-full rounded-xl border p-3"><textarea name="descricao" placeholder="Descrição" class="w-full rounded-xl border p-3"></textarea><input type="number" name="carga_horaria" min="1" value="1" class="w-full rounded-xl border p-3"><button class="w-full rounded-xl bg-blue-700 text-white py-3 font-semibold">Salvar treinamento</button></form></div></main></body></html>

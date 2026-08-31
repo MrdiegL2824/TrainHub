@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS sessoes (
 
 CREATE INDEX IF NOT EXISTS idx_treinamentos_area ON treinamentos(area_id);
 CREATE INDEX IF NOT EXISTS idx_treinamentos_status ON treinamentos(status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_treinamentos_titulo_unique ON treinamentos(titulo);
 CREATE INDEX IF NOT EXISTS idx_aulas_treinamento ON aulas(treinamento_id);
 CREATE INDEX IF NOT EXISTS idx_materiais_aula ON materiais(aula_id);
 CREATE INDEX IF NOT EXISTS idx_sessoes_expira_em ON sessoes(expira_em);
@@ -92,6 +93,12 @@ INSERT INTO usuarios (nome, email, senha_hash, perfil)
 VALUES ('Administrador', 'admin@senai-cic.br', '$2y$10$/SwU.UzQgTz6RRvqSjTwzuErFvcCPZOVes8Vxl1NiWMQIYmrGLwoG', 'admin')
 ON CONFLICT (email) DO NOTHING;
 
+INSERT INTO usuarios (nome, email, senha_hash, perfil, ativo)
+VALUES
+    ('Dev TrainHub', 'dev@trainhub.local', '$2y$10$JoomRnfUVxFeronhCxo0LeX/FzOl7wGycSmcb3.De8CyGM6WGw/hi', 'admin', TRUE),
+    ('Cliente Demo', 'cliente@trainhub.local', '$2y$10$x.iqJT4J8ots20yPHeObNeXuf8OkQXXhU0LOd0RlKF6eLuFsjuI.W', 'instrutor', TRUE)
+ON CONFLICT (email) DO UPDATE SET senha_hash = EXCLUDED.senha_hash, perfil = EXCLUDED.perfil, ativo = TRUE;
+
 INSERT INTO areas (nome, descricao, cor)
 VALUES
     ('Automação Industrial', 'Sistemas, CLP, robótica e instrumentação.', '#1E40AF'),
@@ -99,3 +106,14 @@ VALUES
     ('Segurança do Trabalho', 'NRs, EPIs, análise de risco e prevenção.', '#92400E'),
     ('Gestão e Negócios', 'Liderança, projetos e processos organizacionais.', '#5B21B6')
 ON CONFLICT DO NOTHING;
+
+INSERT INTO treinamentos (area_id, criado_por, titulo, descricao, carga_horaria, status)
+SELECT a.id, u.id, dados.titulo, dados.descricao, dados.carga_horaria, 'publicado'
+FROM (VALUES
+    ('Tecnologia da Informação', 'Integração ao TrainHub', 'Conheça o ambiente de treinamento e acompanhe sua evolução.', 1.0),
+    ('Segurança do Trabalho', 'Boas práticas de segurança', 'Conteúdo inicial para testar a jornada do cliente.', 2.0),
+    ('Automação Industrial', 'Fundamentos da Automação', 'Trilha demonstrativa para a equipe validar o catálogo.', 3.0)
+) AS dados(area_nome, titulo, descricao, carga_horaria)
+JOIN areas a ON a.nome = dados.area_nome
+JOIN usuarios u ON u.email = 'dev@trainhub.local'
+ON CONFLICT (titulo) DO NOTHING;
