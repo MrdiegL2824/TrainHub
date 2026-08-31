@@ -1,14 +1,138 @@
 <?php
-// Configurações do banco de dados (Apenas Conexão!)
-$host = 'localhost';
-$dbname = 'trainhub'; 
-$username = 'root';    
-$password = '';        
+declare(strict_types=1);
+
+define('APP_NAME', 'TrainHub');
+
+$databaseUrl = trim((string) (getenv('DATABASE_URL') ?: getenv('NEON_DATABASE_URL') ?: ''));
+$usingPostgres = $databaseUrl !== '';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Erro crítico de conexão: " . $e->getMessage());
+    if ($usingPostgres) {
+        $parts = parse_url($databaseUrl);
+        if ($parts === false || empty($parts['host']) || empty($parts['path'])) {
+            throw new RuntimeException('DATABASE_URL inválida.');
+        }
+
+        $databaseName = ltrim($parts['path'], '/');
+        $endpointId = preg_replace('/-pooler$/', '', explode('.', (string) $parts['host'])[0]);
+        $dsn = 'pgsql:host=' . $parts['host']
+            . ';port=' . ($parts['port'] ?? 5432)
+            . ';dbname=' . rawurldecode($databaseName) . ' options=endpoint=' . $endpointId
+            . ';sslmode=require';
+
+        $pdo = new PDO(
+            $dsn,
+            rawurldecode((string) ($parts['user'] ?? '')),
+            rawurldecode((string) ($parts['pass'] ?? '')),
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
+    } else {
+        $host = getenv('TRAINHUB_DB_HOST') ?: 'localhost';
+        $dbname = getenv('TRAINHUB_DB_NAME') ?: 'trainhub';
+        $username = getenv('TRAINHUB_DB_USER') ?: 'root';
+        $password = getenv('TRAINHUB_DB_PASS') ?: '';
+
+        $pdo = new PDO(
+            "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+            $username,
+            $password,
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ]
+        );
+    }
+} catch (Throwable $e) {
+    error_log('TrainHub database connection failed: ' . $e->getMessage());
+    http_response_code(503);
+    exit('O banco de dados não está disponível no momento.');
+}
+
+$appUrl = rtrim((string) (getenv('APP_URL') ?: ''), '/');
+if ($appUrl === '') {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    $appUrl = ($isHttps ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+}
+define('APP_URL', $appUrl);
+
+function redirecionar(string $caminho): never
+{
+    header('Location: ' . APP_URL . '/' . ltrim($caminho, '/'));
+    exit;
+}
+
+function usuarioLogado(): bool
+{
+    return !empty($_SESSION['usuario_id']);
+}
+
+function exigirLogin(): void
+{
+    if (!usuarioLogado()) {
+        redirecionar('index.php');
+    }
+}
+
+final class TrainHubSessionHandler implements SessionHandlerInterface
+{
+    public function __construct(private PDO $pdo) {}
+
+    public function open(string $path, string $name): bool { return true; }
+    public function close(): bool { return true; }
+
+    public function read(string $id): string|false
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT dados FROM sessoes WHERE id = ? AND expira_em > CURRENT_TIMESTAMP'
+        );
+        $stmt->execute([$id]);
+        $dados = $stmt->fetchColumn();
+        return $dados === false ? '' : (string) $dados;
+    }
+
+    public function write(string $id, string $data): bool
+    {
+        $seconds = max(300, (int) ini_get('session.gc_maxlifetime'));
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO sessoes (id, dados, expira_em) VALUES (?, ?, CURRENT_TIMESTAMP + (? * INTERVAL \'1 second\')) '
+            . 'ON CONFLICT (id) DO UPDATE SET dados = EXCLUDED.dados, expira_em = EXCLUDED.expira_em'
+        );
+        return $stmt->execute([$id, $data, $seconds]);
+    }
+
+    public function destroy(string $id): bool
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM sessoes WHERE id = ?');
+        return $stmt->execute([$id]);
+    }
+
+    public function gc(int $max_lifetime): int|false
+    {
+        return $this->pdo->exec('DELETE FROM sessoes WHERE expira_em <= CURRENT_TIMESTAMP');
+    }
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    session_name('trainhub_session');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => str_starts_with(APP_URL, 'https://'),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+
+    if ($usingPostgres) {
+        session_set_save_handler(new TrainHubSessionHandler($pdo), true);
+    }
+
+    session_start();
 }

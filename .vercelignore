@@ -1,0 +1,11 @@
+.git/
+.vercel/
+.env
+.env.*
+storage/
+uploads/
+work/
+outputs/
+work-neon-client/
+.agents/
+skills-lock.json

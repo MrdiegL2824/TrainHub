@@ -1,3 +1,9 @@
+<?php
+require_once 'config.php';
+if (usuarioLogado()) {
+    redirecionar('dashboard.php');
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

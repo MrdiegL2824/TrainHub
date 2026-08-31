@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+exigirLogin();
 
 try {
     $total_treinamentos = $pdo->query("SELECT COUNT(*) FROM treinamentos")->fetchColumn();
@@ -29,7 +30,7 @@ try {
 } catch (PDOException $e) {
     $metricas = ['treinamentos' => 0, 'aulas' => 0, 'materiais' => 0];
     $cursos_recentes = [];
-    echo "<script>console.error('Erro SGT Banco: " . $e->getMessage() . "');</script>";
+    error_log('TrainHub dashboard query failed: ' . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>

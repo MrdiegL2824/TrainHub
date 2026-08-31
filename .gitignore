@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+.vercel/
+storage/
+work-neon-client/
+.agents/
+skills-lock.json
+uploads/*
+!uploads/*/.gitkeep
