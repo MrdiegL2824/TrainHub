@@ -6,8 +6,10 @@ $mensagens = [
     'campos_vazios' => 'Informe e-mail e senha.',
     'solicitacao' => 'A solicitação expirou. Tente novamente.',
     'erro_interno' => 'Não foi possível concluir o login agora.',
+    'suporte_campos' => 'Escreva uma mensagem para solicitar suporte.',
 ];
 $erro = $mensagens[$_GET['erro'] ?? ''] ?? '';
+$bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
 ?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -33,6 +35,13 @@ $erro = $mensagens[$_GET['erro'] ?? ''] ?? '';
         .novo-usuario { display: block; margin-top: 15px; color: #4162b6; font-size: 15px; text-decoration: none; }
         .novo-usuario:hover { color: #89a6ff; }
         .aviso-erro { margin: 0 0 12px; padding: 7px 9px; border-radius: 8px; background: rgba(180, 20, 20, .82); color: #fff; font-size: 11px; font-weight: 700; }
+        .modal-fundo { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; padding: 20px; background: rgba(0, 0, 0, .62); }
+        .modal { width: min(430px, 100%); padding: 26px; border: 1px solid #31558b; border-radius: 16px; background: #101a2b; box-shadow: 0 12px 40px rgba(0, 0, 0, .45); }
+        .modal h2 { margin: 0 0 10px; font-size: 22px; }
+        .modal p { margin: 0 0 18px; color: #c7d2e7; line-height: 1.5; }
+        .modal textarea { display: block; width: 100%; min-height: 110px; margin-bottom: 14px; padding: 11px; border: 0; border-radius: 10px; resize: vertical; }
+        .modal button { width: 100%; padding: 11px; border: 0; border-radius: 9px; background: #3159b2; color: #fff; font-weight: 700; cursor: pointer; }
+        .modal-fechar { display: block; margin-top: 13px; color: #9db2d8; text-align: center; font-size: 13px; text-decoration: none; }
         @media (max-width: 600px) {
             body { background-position: 63% center; overflow: auto; }
             .marca { top: 18px; left: 18px; }
@@ -56,6 +65,7 @@ $erro = $mensagens[$_GET['erro'] ?? ''] ?? '';
             </form>
             <a class="novo-usuario" href="cadastro.php">Não tem uma conta?</a>
         </section>
+        <?php if ($bloqueado): ?><div class="modal-fundo"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-bloqueio"><h2 id="titulo-bloqueio">Acesso bloqueado</h2><p>Seu acesso ao TrainHub está bloqueado no momento. Se acredita que isso aconteceu por engano, solicite suporte à equipe.</p><form action="api/suporte.php" method="POST"><?php echo csrfInput(); ?><textarea name="mensagem" required placeholder="Explique sua solicitação ao administrador..."></textarea><button type="submit">Enviar solicitação de suporte</button></form><a class="modal-fechar" href="logout.php">Voltar para o login</a></section></div><?php endif; ?>
     </main>
 </body>
 </html>

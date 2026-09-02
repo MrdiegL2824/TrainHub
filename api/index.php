@@ -13,6 +13,7 @@ $pages = [
     '/recuperar-senha.php' => 'recuperar-senha.php',
     '/dashboard.php' => 'dashboard.php',
     '/admin-dashboard.php' => 'admin-dashboard.php',
+    '/admin-gerenciar.php' => 'admin-gerenciar.php',
     '/areas.php' => 'areas.php',
     '/treinamentos.php' => 'treinamentos.php',
     '/treinamento-detalhe.php' => 'treinamento-detalhe.php',
@@ -24,6 +25,7 @@ $pages = [
     '/api/index.php' => 'index.php',
     '/api/auth.php' => 'api/auth.php',
     '/api/google-auth.php' => 'api/google-auth.php',
+    '/api/suporte.php' => 'api/suporte.php',
 ];
 
 $page = $pages[$requestedPath] ?? null;

@@ -1,74 +1,11 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrainHub-Usuários</title>
-    <link rel="stylesheet" href="css/estilos.css?v=1.6">
-    
-    <style>
-        body {
-            background-color: #b2c0d6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .container-usuarios {
-            background-color: #e5eaf5;
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .titulo-usuarios {
-            color: #3b4766;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-        }
-
-        .btn-voltar {
-            display: inline-block;
-            width: 100%;
-            max-width: 200px;
-            padding: 12px 24px;
-            background-color: #3f5283;
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 16px;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .btn-voltar:hover {
-            background-color: #314067;
-            transform: translateY(-1px);
-        }
-
-        .btn-voltar:active {
-            transform: translateY(0);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container-usuarios">
-        <h1 class="titulo-usuarios">Usuários</h1>
-        
-        <div style="margin-bottom: 30px; color: #718096; font-size: 0.95rem;">
-            <p>Gerencie os usuários cadastrados no sistema TrainHub aqui.</p>
-        </div>
-
-        <a class="btn-voltar" href="dashboard.php">Voltar ao Painel</a>
-    </div>
-
-</body>
-</html>
+<?php
+require_once 'config.php'; exigirLogin();
+if (!temPerfil('admin')) { http_response_code(403); exit('Acesso restrito aos administradores.'); }
+$mensagem = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && validarCsrf($_POST['csrf_token'] ?? null)) {
+    $id = (int) ($_POST['usuario_id'] ?? 0);
+    if ($id === (int) $_SESSION['usuario_id']) { $mensagem = 'O administrador atual não pode bloquear a própria conta.'; }
+    else { $stmt = $pdo->prepare('UPDATE usuarios SET ativo = CASE WHEN ativo = TRUE THEN FALSE ELSE TRUE END, atualizado_em = CURRENT_TIMESTAMP WHERE id = ?'); $stmt->execute([$id]); $mensagem = 'Status do usuário atualizado.'; }
+}
+$usuarios = $pdo->query('SELECT id, nome, email, perfil, ativo, criado_em FROM usuarios ORDER BY nome')->fetchAll();
+?><!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TrainHub - Usuários</title><script src="https://cdn.tailwindcss.com"></script></head><body class="bg-slate-100 min-h-screen text-slate-800"><main class="max-w-6xl mx-auto p-6 md:p-10"><div class="flex justify-between items-center mb-8"><div><a href="admin-dashboard.php" class="text-blue-700 font-semibold">← Dashboard administrativo</a><h1 class="text-3xl font-bold mt-3">Usuários</h1><p class="text-slate-500">Gerencie perfis e acessos ao TrainHub.</p></div><a href="logout.php" class="rounded-xl bg-slate-800 text-white px-4 py-2">Sair</a></div><?php if ($mensagem): ?><div class="mb-6 rounded-xl bg-blue-50 text-blue-800 px-4 py-3"><?php echo esc($mensagem); ?></div><?php endif; ?><section class="bg-white rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-800 text-white"><tr><th class="p-4">Nome</th><th class="p-4">E-mail</th><th class="p-4">Perfil</th><th class="p-4">Status</th><th class="p-4">Ação</th></tr></thead><tbody><?php foreach ($usuarios as $usuario): ?><tr class="border-b"><td class="p-4 font-semibold"><?php echo esc($usuario['nome']); ?></td><td class="p-4"><?php echo esc($usuario['email']); ?></td><td class="p-4"><?php echo esc($usuario['perfil']); ?></td><td class="p-4"><span class="rounded-full px-3 py-1 text-sm <?php echo $usuario['ativo'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>"><?php echo $usuario['ativo'] ? 'Ativo' : 'Bloqueado'; ?></span></td><td class="p-4"><?php if ((int) $usuario['id'] !== (int) $_SESSION['usuario_id']): ?><form method="post"><?php echo csrfInput(); ?><input type="hidden" name="usuario_id" value="<?php echo (int) $usuario['id']; ?>"><button class="rounded-lg bg-slate-700 px-3 py-2 text-white"><?php echo $usuario['ativo'] ? 'Bloquear' : 'Desbloquear'; ?></button></form><?php else: ?><span class="text-slate-400">Conta atual</span><?php endif; ?></td></tr><?php endforeach; ?></tbody></table></div></section></main></body></html>

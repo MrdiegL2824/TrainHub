@@ -16,6 +16,15 @@ $senha = isset($_POST['senha']) ? trim($_POST['senha']) : '';
         $stmt->execute([$email]);
         $usuario = $stmt->fetch();
 
+        if ($usuario && $usuario['ativo'] != 1 && password_verify($senha, $usuario['senha_hash'])) {
+            session_regenerate_id(true);
+            $_SESSION['usuario_bloqueado_id'] = $usuario['id'];
+            $_SESSION['usuario_bloqueado_nome'] = $usuario['nome'];
+            $_SESSION['usuario_bloqueado_email'] = $usuario['email'];
+            header('Location: ../index.php?bloqueado=1');
+            exit;
+        }
+
         if ($usuario && $usuario['ativo'] == 1 && password_verify($senha, $usuario['senha_hash'])) {
             
             session_regenerate_id(true);
