@@ -87,5 +87,25 @@ body:has(#lista-cursos) .avatar:after {
 @media (min-width: 901px) {
     body:has(#lista-cursos) .conteudo {
         width: 93vw !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-top: 49px !important;
+    }
+
+    body:has(#lista-cursos) .cursos {
+        gap: 34px;
+    }
+
+    body:has(#lista-cursos) .curso-capa {
+        height: 147px;
+    }
+
+    body:has(#lista-cursos) .areas {
+        margin-top: 35px;
+    }
+
+    body:has(#lista-cursos) .area-capa {
+        width: min(11vw, 212px);
+        height: 55px;
     }
 }
