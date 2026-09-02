@@ -23,3 +23,69 @@ main.max-w-6xl {
         padding-right: 4vw !important;
     }
 }
+
+/* Tela inicial: composição visual da referência, sem afetar o dashboard admin. */
+body:has(#lista-cursos) .conteudo {
+    width: 84vw !important;
+    max-width: none !important;
+    padding: 32px 0 48px !important;
+}
+
+body:has(#lista-cursos) .cabecalho {
+    display: none !important;
+}
+
+body:has(#lista-cursos) .dashboard-link {
+    left: 71% !important;
+}
+
+body:has(#lista-cursos) .area-capa {
+    width: clamp(122px, 14vw, 170px);
+    height: 45px;
+}
+
+body:has(#lista-cursos) .area-capa span {
+    color: #fff !important;
+}
+
+body:has(#lista-cursos) .estrela {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+    font-size: 18px !important;
+    line-height: 20px;
+}
+
+body:has(#lista-cursos) .avatar {
+    position: relative;
+    overflow: hidden;
+    background: #05070c !important;
+}
+
+body:has(#lista-cursos) .avatar:before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 9px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #9fa5b0;
+}
+
+body:has(#lista-cursos) .avatar:after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 5px;
+    width: 18px;
+    height: 10px;
+    border-radius: 12px 12px 4px 4px;
+    background: #9fa5b0;
+}
+
+@media (min-width: 901px) {
+    body:has(#lista-cursos) .conteudo {
+        width: 93vw !important;
+    }
+}
