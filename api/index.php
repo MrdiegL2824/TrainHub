@@ -11,6 +11,7 @@ $pages = [
     '/index.php' => 'index.php',
     '/cadastro.php' => 'cadastro.php',
     '/recuperar-senha.php' => 'recuperar-senha.php',
+    '/inicio.php' => 'inicio.php',
     '/dashboard.php' => 'dashboard.php',
     '/admin-dashboard.php' => 'admin-dashboard.php',
     '/admin-gerenciar.php' => 'admin-gerenciar.php',

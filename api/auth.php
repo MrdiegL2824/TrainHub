@@ -35,7 +35,7 @@ $senha = isset($_POST['senha']) ? trim($_POST['senha']) : '';
             $_SESSION['logado']       = true;
             $_SESSION['usuario_perfil'] = $usuario['perfil'];
 
-            header('Location: ../dashboard.php');
+            header('Location: ../inicio.php');
             exit;
 
         } else {

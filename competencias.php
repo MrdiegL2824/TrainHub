@@ -67,7 +67,7 @@
             <p>Gerencie as competências cadastradas no sistema TrainHub aqui.</p>
         </div>
 
-        <a class="btn-voltar" href="dashboard.php">Voltar ao Painel</a>
+        <a class="btn-voltar" href="inicio.php">Voltar ao Painel</a>
     </div>
 
 </body>

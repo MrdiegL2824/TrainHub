@@ -1,6 +1,6 @@
 <?php
 require_once 'config.php';
-if (usuarioLogado()) { redirecionar('dashboard.php'); }
+if (usuarioLogado()) { redirecionar('inicio.php'); }
 $mensagens = [
     'credenciais_invalidas' => 'E-mail ou senha inválidos.',
     'campos_vazios' => 'Informe e-mail e senha.',
