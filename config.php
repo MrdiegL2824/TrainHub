@@ -189,7 +189,7 @@ if (!headers_sent()) {
         }
         return preg_replace(
             '/<\/head>/i',
-            '<link rel="stylesheet" href="css/responsivo.css?v=6.0"></head>',
+            '<link rel="stylesheet" href="css/responsivo.css?v=7.0"></head>',
             $conteudo,
             1
         ) ?? $conteudo;

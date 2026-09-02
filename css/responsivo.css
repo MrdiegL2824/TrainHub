@@ -606,9 +606,9 @@ body:has(#lista-cursos) .area-select-opcoes button:focus-visible {
 }
 
 /* Em monitores de notebook e desktop, mantém a proporção da referência
-   mesmo quando o navegador está no zoom normal. A partir de 701px a escala
+   mesmo quando o navegador está no zoom normal. A partir de 521px a escala
    é contínua para evitar uma troca brusca ao alterar o zoom do navegador. */
-@media (min-width: 701px) {
+@media (min-width: 521px) {
     body:has(#lista-cursos) {
         overflow-x: hidden;
         background: #2a3140;
