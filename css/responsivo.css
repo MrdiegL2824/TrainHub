@@ -604,3 +604,366 @@ body:has(#lista-cursos) .area-select-opcoes button:focus-visible {
         padding-left: 14px;
     }
 }
+
+/* Em monitores de notebook e desktop, mantém a proporção da referência
+   mesmo quando o navegador está no zoom normal. */
+@media (min-width: 901px) and (max-width: 1600px) {
+    body:has(#lista-cursos) {
+        overflow-x: hidden;
+        background: #2a3140;
+        scrollbar-color: transparent transparent;
+    }
+
+    body:has(#lista-cursos)::-webkit-scrollbar {
+        width: 15px;
+        height: 0;
+    }
+
+    body:has(#lista-cursos)::-webkit-scrollbar-track,
+    body:has(#lista-cursos)::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+
+    body:has(#lista-cursos) .topo {
+        height: 4.0872vw;
+        min-height: 4.0872vw;
+        padding: 0 .8174vw;
+        border-bottom-width: .1362vw;
+        border-bottom-color: #2f343e;
+        background: #34373c;
+        box-shadow: none;
+    }
+
+    body:has(#lista-cursos) .logo,
+    body:has(#lista-cursos) .logo img {
+        width: 3.4060vw;
+        height: 3.4060vw;
+    }
+
+    body:has(#lista-cursos) .dashboard-link {
+        top: .5450vw;
+        left: 77.4% !important;
+        padding: .4087vw .9537vw;
+        border-radius: 1.0899vw;
+        background: #1e2430;
+        font-size: 1.4986vw;
+    }
+
+    body:has(#lista-cursos) .avatar {
+        width: 3.5422vw;
+        height: 3.5422vw;
+    }
+
+    body:has(#lista-cursos) .usuario {
+        position: absolute;
+        top: .2725vw;
+        right: -1.4986vw;
+    }
+
+    body:has(#lista-cursos) .avatar:before {
+        top: .5450vw;
+        left: 1.0899vw;
+        width: 1.0899vw;
+        height: 1.0899vw;
+    }
+
+    body:has(#lista-cursos) .avatar:after {
+        bottom: .4087vw;
+        left: .5450vw;
+        width: 2.1798vw;
+        height: 1.0899vw;
+    }
+
+    body:has(#lista-cursos) .conteudo {
+        width: 84vw !important;
+        margin: 0 auto !important;
+        padding: 3.5422vw 0 6.5395vw !important;
+        transform: translateX(1.4986vw);
+    }
+
+    body:has(#lista-cursos) .cartao {
+        padding: .8174vw 3.2698vw 3.4060vw;
+        border-radius: 1.6349vw;
+        background: #3a4356;
+        box-shadow: none;
+    }
+
+    body:has(#lista-cursos) .secao-topo {
+        min-height: 2.3161vw;
+        margin-bottom: -.6812vw;
+    }
+
+    body:has(#lista-cursos) .secao-topo h2 {
+        font-size: 1.6349vw;
+    }
+
+    body:has(#lista-cursos) .filtros {
+        width: auto !important;
+        gap: .6812vw;
+    }
+
+    body:has(#lista-cursos) section:not(.areas) .secao-topo h2 {
+        transform: translateY(-.1362vw);
+    }
+
+    body:has(#lista-cursos) section:not(.areas) .filtros {
+        transform: translate(.5450vw, -.5450vw);
+    }
+
+    body:has(#lista-cursos) .areas .secao-topo h2 {
+        transform: translateY(-.2725vw);
+    }
+
+    body:has(#lista-cursos) .areas .filtros {
+        gap: .9537vw;
+        transform: translate(-.8174vw, -.4087vw);
+    }
+
+    body:has(#lista-cursos) .busca {
+        flex: 0 0 15.6676vw !important;
+        width: 15.6676vw;
+        height: 2.1798vw;
+        padding: .1362vw .9537vw .1362vw 2.8610vw;
+        border-radius: 1.2267vw;
+        background: #272d3c;
+        font-size: 1.4986vw;
+    }
+
+    body:has(#lista-cursos) .select {
+        flex: 0 0 9.8093vw;
+        width: 9.8093vw;
+        height: 2.1798vw;
+        padding: 0 .5450vw;
+        border-radius: 1.2267vw;
+        background: #1e2430;
+        font-size: 1.4986vw;
+    }
+
+    body:has(#lista-cursos) .areas .busca {
+        flex-basis: 14.8501vw !important;
+        width: 14.8501vw;
+    }
+
+    body:has(#lista-cursos) .areas .select {
+        flex-basis: 9.5368vw;
+        width: 9.5368vw;
+    }
+
+    body:has(#lista-cursos) .area-select {
+        position: relative;
+        z-index: 20;
+        flex: 0 0 9.5368vw;
+        width: 9.5368vw;
+        height: 2.1798vw;
+        padding: 0;
+        overflow: visible;
+    }
+
+    body:has(#lista-cursos) .area-select summary {
+        position: relative;
+        height: 2.1798vw;
+        padding: 0 2.3161vw 0 .6812vw;
+        list-style: none;
+        color: #e8edf7;
+        line-height: 2.1798vw;
+        cursor: pointer;
+    }
+
+    body:has(#lista-cursos) .area-select summary::-webkit-details-marker {
+        display: none;
+    }
+
+    body:has(#lista-cursos) .area-select summary:after {
+        content: '';
+        position: absolute;
+        top: .6812vw;
+        right: .9537vw;
+        width: .8174vw;
+        height: .8174vw;
+        border-top: .2725vw solid #dbe2ee;
+        border-left: .2725vw solid #dbe2ee;
+        transform: rotate(45deg);
+    }
+
+    body:has(#lista-cursos) .area-select:not([open]) summary:after {
+        top: .4087vw;
+        transform: rotate(225deg);
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes {
+        position: absolute;
+        top: 1.6349vw;
+        left: 0;
+        z-index: 30;
+        width: 9.5368vw;
+        padding: .1362vw 0 .2725vw;
+        border: .1362vw solid #858994;
+        border-radius: .9537vw;
+        background: #3c424d;
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes button {
+        display: block;
+        width: 100%;
+        height: 1.7711vw;
+        padding: 0 .5450vw;
+        border: 0;
+        background: transparent;
+        color: #e1e3e8;
+        font: 1.4986vw/1.7711vw Arial, Helvetica, sans-serif;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes button:hover,
+    body:has(#lista-cursos) .area-select-opcoes button:focus-visible {
+        background: #505866;
+        outline: none;
+    }
+
+    body:has(#lista-cursos) section:not(.areas) .filtros:after,
+    body:has(#lista-cursos) .areas .filtros:after {
+        width: 1.9074vw;
+        font-size: 1.6349vw;
+        text-align: center;
+    }
+
+    body:has(#lista-cursos) section:not(.areas) .filtros:after {
+        content: '☰';
+        color: #dbe2ee;
+    }
+
+    body:has(#lista-cursos) .areas .filtros:after {
+        content: '⊞';
+        color: #dbe2ee;
+    }
+
+    body:has(#lista-cursos) .cursos {
+        grid-template-columns: repeat(3, 22.8883vw);
+        gap: 3.6785vw;
+        transform: translateX(-.1362vw);
+    }
+
+    body:has(#lista-cursos) .curso-capa {
+        height: 15.6676vw;
+        padding: 0;
+        border-radius: 1.2267vw;
+        background: #1e2430;
+    }
+
+    body:has(#lista-cursos) .curso-capa:before {
+        display: none;
+    }
+
+    body:has(#lista-cursos) .curso-capa h3,
+    body:has(#lista-cursos) .link-curso {
+        display: none;
+    }
+
+    body:has(#lista-cursos) .curso-rodape {
+        justify-content: flex-start;
+        margin-top: .5450vw;
+        font-size: 1.4986vw;
+    }
+
+    body:has(#lista-cursos) .concluido {
+        color: #34c759;
+        transform: translateX(.6812vw);
+    }
+
+    body:has(#lista-cursos) .andamento {
+        color: #ffcc00;
+    }
+
+    body:has(#lista-cursos) .encerrado {
+        color: #ff383c;
+        transform: translateX(1.6349vw);
+    }
+
+    body:has(#lista-cursos) .progresso-circulo {
+        right: .6812vw;
+        bottom: .4087vw;
+        width: 4.6324vw;
+        height: 4.6324vw;
+        background: #1e2430;
+        border-width: .5450vw;
+        border-color: #002aff;
+        font-size: 1.4986vw;
+    }
+
+    body:has(#lista-cursos) .progresso-circulo.zero {
+        border-color: #aeb1b8;
+    }
+
+    body:has(#lista-cursos) .areas {
+        margin-top: 3.6785vw;
+        padding: .6812vw 2.4523vw 2.4523vw;
+    }
+
+    body:has(#lista-cursos) .areas .secao-topo {
+        margin-bottom: .9537vw;
+    }
+
+    body:has(#lista-cursos) .grade-areas {
+        grid-template-columns: 22.6158vw 23.2970vw minmax(0, 1fr);
+        gap: 1.3624vw 3.8147vw;
+        transform: translateY(.1362vw);
+    }
+
+    body:has(#lista-cursos) .area {
+        grid-template-columns: 14.5777vw 2.4523vw;
+        justify-content: start;
+        align-items: start;
+        gap: .9537vw;
+        padding-left: .6812vw;
+    }
+
+    body:has(#lista-cursos) .area > div {
+        position: relative;
+        width: 14.5777vw;
+        height: 5.3134vw;
+    }
+
+    body:has(#lista-cursos) .area > div > .tag {
+        position: absolute;
+        top: 2.8610vw;
+        margin-left: 0;
+    }
+
+    body:has(#lista-cursos) .area > div > .tag:first-of-type {
+        left: 14.8501vw;
+    }
+
+    body:has(#lista-cursos) .area > div > .tag:nth-of-type(2) {
+        left: 19.7548vw;
+    }
+
+    body:has(#lista-cursos) .area-capa {
+        width: 14.5777vw;
+        height: 5.3134vw;
+        padding: 0 1.9074vw;
+        border-radius: .9537vw;
+    }
+
+    body:has(#lista-cursos) .area-capa span {
+        font-size: 2.0436vw;
+    }
+
+    body:has(#lista-cursos) .estrela {
+        align-self: start;
+        width: 2.4523vw;
+        height: 2.4523vw;
+        margin-top: .2725vw;
+        font-size: 2.3161vw !important;
+        line-height: 2.4523vw;
+    }
+
+    body:has(#lista-cursos) .tag {
+        height: 2.1798vw;
+        padding: .2725vw .6812vw;
+        border-radius: 1.0899vw;
+        background: #727989;
+        font-size: 1.2267vw;
+        line-height: 1.6349vw;
+    }
+}
