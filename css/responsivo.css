@@ -56,6 +56,10 @@ body:has(#lista-cursos) .estrela {
     line-height: 20px;
 }
 
+body:has(#lista-cursos) .item-area:first-child .estrela {
+    color: #ffcc00;
+}
+
 body:has(#lista-cursos) .avatar {
     position: relative;
     overflow: hidden;
@@ -84,11 +88,82 @@ body:has(#lista-cursos) .avatar:after {
     background: #9fa5b0;
 }
 
+body:has(#lista-cursos) .area-select {
+    position: relative;
+    z-index: 20;
+    flex: 0 0 84px;
+    width: 84px;
+    padding: 0;
+    overflow: visible;
+}
+
+body:has(#lista-cursos) .area-select summary {
+    position: relative;
+    height: 22px;
+    padding: 0 19px 0 7px;
+    list-style: none;
+    color: #e8edf7;
+    line-height: 22px;
+    cursor: pointer;
+}
+
+body:has(#lista-cursos) .area-select summary::-webkit-details-marker {
+    display: none;
+}
+
+body:has(#lista-cursos) .area-select summary:after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    width: 7px;
+    height: 7px;
+    border-top: 2px solid #dbe2ee;
+    border-left: 2px solid #dbe2ee;
+    transform: rotate(45deg);
+}
+
+body:has(#lista-cursos) .area-select:not([open]) summary:after {
+    top: 3px;
+    transform: rotate(225deg);
+}
+
+body:has(#lista-cursos) .area-select-opcoes {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    z-index: 30;
+    width: 84px;
+    padding: 2px 0;
+    border: 1px solid #858994;
+    border-radius: 7px;
+    background: #3c424d;
+}
+
+body:has(#lista-cursos) .area-select-opcoes button {
+    display: block;
+    width: 100%;
+    height: 16px;
+    padding: 0 6px;
+    border: 0;
+    background: transparent;
+    color: #e1e3e8;
+    font: 12px/16px Arial, Helvetica, sans-serif;
+    text-align: left;
+    cursor: pointer;
+}
+
+body:has(#lista-cursos) .area-select-opcoes button:hover,
+body:has(#lista-cursos) .area-select-opcoes button:focus-visible {
+    background: #505866;
+    outline: none;
+}
+
 @media (min-width: 901px) {
     body:has(#lista-cursos) .conteudo {
         width: 93vw !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
         padding-top: 49px !important;
     }
 
@@ -107,5 +182,425 @@ body:has(#lista-cursos) .avatar:after {
     body:has(#lista-cursos) .area-capa {
         width: min(11vw, 212px);
         height: 55px;
+    }
+}
+
+@media (max-width: 900px) {
+    body:has(#lista-cursos) {
+        overflow-x: hidden;
+        background: #2a3140;
+        scrollbar-color: #34373c #2a3140;
+    }
+
+    body:has(#lista-cursos)::-webkit-scrollbar {
+        width: 15px;
+        height: 0;
+    }
+
+    body:has(#lista-cursos)::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    body:has(#lista-cursos)::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        background: transparent;
+    }
+
+    body:has(#lista-cursos) .topo {
+        height: 30px;
+        min-height: 30px;
+        padding: 0 6px;
+        border-bottom-color: #2f343e;
+        background: #34373c;
+        box-shadow: none;
+    }
+
+    body:has(#lista-cursos) .logo,
+    body:has(#lista-cursos) .logo img {
+        width: 25px;
+        height: 25px;
+    }
+
+    body:has(#lista-cursos) .dashboard-link {
+        top: 4px;
+        left: 77.4% !important;
+        padding: 3px 7px;
+        border-radius: 8px;
+        background: #1e2430;
+        font-size: 11px;
+    }
+
+    body:has(#lista-cursos) .avatar {
+        width: 26px;
+        height: 26px;
+    }
+
+    body:has(#lista-cursos) .usuario {
+        position: absolute;
+        top: 2px;
+        right: -11px;
+    }
+
+    body:has(#lista-cursos) .avatar:before {
+        top: 4px;
+        left: 8px;
+        width: 8px;
+        height: 8px;
+    }
+
+    body:has(#lista-cursos) .avatar:after {
+        bottom: 3px;
+        left: 4px;
+        width: 16px;
+        height: 8px;
+    }
+
+    body:has(#lista-cursos) .conteudo {
+        width: 84vw !important;
+        margin: 0 auto !important;
+        padding: 26px 0 48px !important;
+        transform: translateX(11px);
+    }
+
+    body:has(#lista-cursos) .cartao {
+        padding: 6px 24px 25px;
+        border-radius: 12px;
+        background: #3a4356;
+        box-shadow: none;
+    }
+
+    body:has(#lista-cursos) .secao-topo {
+        min-height: 17px;
+        margin-bottom: -5px;
+    }
+
+    body:has(#lista-cursos) .secao-topo h2 {
+        font-size: 12px;
+    }
+
+    body:has(#lista-cursos) .filtros {
+        width: auto !important;
+        gap: 5px;
+    }
+
+    body:has(#lista-cursos) section:not(.areas) .secao-topo h2 {
+        transform: translateY(-1px);
+    }
+
+    body:has(#lista-cursos) section:not(.areas) .filtros {
+        transform: translate(4px, -4px);
+    }
+
+    body:has(#lista-cursos) .areas .secao-topo h2 {
+        transform: translateY(-2px);
+    }
+
+    body:has(#lista-cursos) .areas .filtros {
+        gap: 7px;
+        transform: translate(-6px, -3px);
+    }
+
+    body:has(#lista-cursos) .busca {
+        flex: 0 0 115px !important;
+        width: 115px;
+        height: 16px;
+        padding: 1px 7px 1px 21px;
+        border-radius: 9px;
+        background: #272d3c;
+        font-size: 11px;
+    }
+
+    body:has(#lista-cursos) .select {
+        flex: 0 0 72px;
+        width: 72px;
+        height: 16px;
+        padding: 0 4px;
+        border-radius: 9px;
+        background: #1e2430;
+        font-size: 11px;
+    }
+
+    body:has(#lista-cursos) .areas .busca {
+        flex-basis: 109px !important;
+        width: 109px;
+    }
+
+    body:has(#lista-cursos) .areas .select {
+        flex-basis: 70px;
+        width: 70px;
+    }
+
+    body:has(#lista-cursos) .area-select {
+        position: relative;
+        z-index: 20;
+        padding: 0;
+        overflow: visible;
+    }
+
+    body:has(#lista-cursos) .area-select summary {
+        position: relative;
+        height: 16px;
+        padding: 0 17px 0 5px;
+        list-style: none;
+        color: #e8edf7;
+        line-height: 16px;
+        cursor: pointer;
+    }
+
+    body:has(#lista-cursos) .area-select summary::-webkit-details-marker {
+        display: none;
+    }
+
+    body:has(#lista-cursos) .area-select summary:after {
+        content: '';
+        position: absolute;
+        top: 5px;
+        right: 7px;
+        width: 6px;
+        height: 6px;
+        border-top: 2px solid #dbe2ee;
+        border-left: 2px solid #dbe2ee;
+        transform: rotate(45deg);
+    }
+
+    body:has(#lista-cursos) .area-select:not([open]) summary:after {
+        top: 2px;
+        transform: rotate(225deg);
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes {
+        position: absolute;
+        top: 12px;
+        left: 0;
+        z-index: 30;
+        width: 70px;
+        padding: 1px 0 2px;
+        border: 1px solid #858994;
+        border-radius: 7px;
+        background: #3c424d;
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes button {
+        display: block;
+        width: 100%;
+        height: 13px;
+        padding: 0 4px;
+        border: 0;
+        background: transparent;
+        color: #e1e3e8;
+        font: 11px/13px Arial, Helvetica, sans-serif;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes button:hover,
+    body:has(#lista-cursos) .area-select-opcoes button:focus-visible {
+        background: #505866;
+        outline: none;
+    }
+
+    body:has(#lista-cursos) section:not(.areas) .filtros:after {
+        content: '☰';
+        width: 14px;
+        color: #dbe2ee;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    body:has(#lista-cursos) .areas .filtros:after {
+        content: '⊞';
+        width: 14px;
+        color: #dbe2ee;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    body:has(#lista-cursos) .cursos {
+        grid-template-columns: repeat(3, 168px);
+        gap: 27px;
+        transform: translateX(-1px);
+    }
+
+    body:has(#lista-cursos) .curso-capa {
+        height: 115px;
+        padding: 0;
+        background: #1e2430;
+    }
+
+    body:has(#lista-cursos) .curso-capa:before {
+        display: none;
+    }
+
+    body:has(#lista-cursos) .curso-capa h3,
+    body:has(#lista-cursos) .link-curso {
+        display: none;
+    }
+
+    body:has(#lista-cursos) .curso-rodape {
+        justify-content: flex-start;
+        margin-top: 4px;
+        font-size: 11px;
+    }
+
+    body:has(#lista-cursos) .concluido {
+        color: #34c759;
+        transform: translateX(5px);
+    }
+
+    body:has(#lista-cursos) .andamento {
+        color: #ffcc00;
+    }
+
+    body:has(#lista-cursos) .encerrado {
+        color: #ff383c;
+        transform: translateX(12px);
+    }
+
+    body:has(#lista-cursos) .progresso-circulo {
+        right: 5px;
+        bottom: 3px;
+        width: 34px;
+        height: 34px;
+        background: #1e2430;
+        border-color: #002aff;
+    }
+
+    body:has(#lista-cursos) .progresso-circulo.zero {
+        border-color: #aeb1b8;
+    }
+
+    body:has(#lista-cursos) .areas {
+        margin-top: 27px;
+        padding: 5px 18px 18px;
+    }
+
+    body:has(#lista-cursos) .areas .secao-topo {
+        margin-bottom: 7px;
+    }
+
+    body:has(#lista-cursos) .grade-areas {
+        grid-template-columns: 166px 171px minmax(0, 1fr);
+        gap: 10px 28px;
+        transform: translateY(1px);
+    }
+
+    body:has(#lista-cursos) .area {
+        grid-template-columns: 107px 18px;
+        justify-content: start;
+        align-items: start;
+        gap: 7px;
+        padding-left: 5px;
+    }
+
+    body:has(#lista-cursos) .area > div {
+        position: relative;
+        width: 107px;
+        height: 39px;
+    }
+
+    body:has(#lista-cursos) .area > div > .tag {
+        position: absolute;
+        top: 21px;
+        margin-left: 0;
+    }
+
+    body:has(#lista-cursos) .area > div > .tag:first-of-type {
+        left: 109px;
+    }
+
+    body:has(#lista-cursos) .area > div > .tag:nth-of-type(2) {
+        left: 145px;
+    }
+
+    body:has(#lista-cursos) .area-capa {
+        width: 107px;
+        height: 39px;
+        padding: 0 14px;
+        border-radius: 7px;
+    }
+
+    body:has(#lista-cursos) .area-capa span {
+        font-size: 15px;
+    }
+
+    body:has(#lista-cursos) .estrela {
+        align-self: start;
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        font-size: 17px !important;
+        line-height: 18px;
+    }
+
+    body:has(#lista-cursos) .tag {
+        height: 16px;
+        padding: 2px 5px;
+        background: #727989;
+        font-size: 9px;
+        line-height: 12px;
+    }
+}
+
+@media (max-width: 700px) {
+    body:has(#lista-cursos) .dashboard-link {
+        left: 50% !important;
+    }
+
+    body:has(#lista-cursos) .usuario {
+        right: 5px;
+    }
+
+    body:has(#lista-cursos) .conteudo {
+        width: calc(100% - 28px) !important;
+        padding-top: 24px !important;
+        transform: none;
+    }
+
+    body:has(#lista-cursos) .cartao {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    body:has(#lista-cursos) .cursos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 14px;
+        transform: none;
+    }
+
+    body:has(#lista-cursos) .grade-areas {
+        grid-template-columns: repeat(2, minmax(170px, 1fr));
+        gap: 10px 18px;
+    }
+}
+
+@media (max-width: 520px) {
+    body:has(#lista-cursos) .secao-topo {
+        min-height: 41px;
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 7px;
+    }
+
+    body:has(#lista-cursos) .secao-topo h2,
+    body:has(#lista-cursos) section:not(.areas) .secao-topo h2,
+    body:has(#lista-cursos) .areas .secao-topo h2 {
+        transform: none;
+    }
+
+    body:has(#lista-cursos) .filtros,
+    body:has(#lista-cursos) section:not(.areas) .filtros,
+    body:has(#lista-cursos) .areas .filtros {
+        align-self: flex-end;
+        transform: none;
+    }
+
+    body:has(#lista-cursos) .cursos,
+    body:has(#lista-cursos) .grade-areas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body:has(#lista-cursos) .areas {
+        padding-right: 14px;
+        padding-left: 14px;
     }
 }
