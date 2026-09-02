@@ -410,3 +410,241 @@ body:has(#lista-cursos) .tag {
         align-self: flex-end;
     }
 }
+
+/* Novo tamanho-base da referência: o que era visto em 175% passa a ser
+   o tamanho de 100%. As medidas continuam em px, então o zoom do navegador
+   segue aumentando e diminuindo normalmente a partir desta base. */
+@media (min-width: 601px) {
+    body:has(#lista-cursos) {
+        --home-scale: 1.75;
+    }
+
+    body:has(#lista-cursos) .topo {
+        height: calc(36px * var(--home-scale));
+        min-height: calc(36px * var(--home-scale));
+        padding: 0 calc(8px * var(--home-scale));
+        border-bottom-width: calc(1px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .logo,
+    body:has(#lista-cursos) .logo img {
+        width: calc(28px * var(--home-scale));
+        height: calc(28px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .dashboard-link {
+        top: calc(4px * var(--home-scale));
+        padding: calc(5px * var(--home-scale)) calc(10px * var(--home-scale));
+        border-radius: calc(11px * var(--home-scale));
+        font-size: calc(13px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .usuario {
+        top: calc(2px * var(--home-scale));
+        right: calc(4px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .avatar {
+        width: calc(31px * var(--home-scale));
+        height: calc(31px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .avatar:before {
+        top: calc(5px * var(--home-scale));
+        left: calc(9px * var(--home-scale));
+        width: calc(10px * var(--home-scale));
+        height: calc(10px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .avatar:after {
+        bottom: calc(3px * var(--home-scale));
+        left: calc(5px * var(--home-scale));
+        width: calc(18px * var(--home-scale));
+        height: calc(10px * var(--home-scale));
+        border-radius: calc(12px * var(--home-scale)) calc(12px * var(--home-scale)) calc(4px * var(--home-scale)) calc(4px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .conteudo {
+        padding-top: calc(20px * var(--home-scale)) !important;
+        padding-bottom: calc(48px * var(--home-scale)) !important;
+    }
+
+    body:has(#lista-cursos) .cartao {
+        padding: calc(14px * var(--home-scale)) calc(18px * var(--home-scale)) calc(22px * var(--home-scale));
+        border-radius: calc(13px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .secao-topo {
+        min-height: calc(22px * var(--home-scale));
+        margin-bottom: calc(10px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .secao-topo h2 {
+        font-size: calc(13px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .filtros {
+        gap: calc(8px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .busca {
+        flex-basis: calc(115px * var(--home-scale)) !important;
+        width: calc(115px * var(--home-scale));
+        height: calc(22px * var(--home-scale));
+        padding: calc(3px * var(--home-scale)) calc(8px * var(--home-scale)) calc(3px * var(--home-scale)) calc(21px * var(--home-scale));
+        border-radius: calc(12px * var(--home-scale));
+        font-size: calc(12px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .select {
+        flex-basis: calc(70px * var(--home-scale));
+        width: calc(70px * var(--home-scale));
+        height: calc(22px * var(--home-scale));
+        padding: 0 calc(7px * var(--home-scale));
+        border-radius: calc(12px * var(--home-scale));
+        font-size: calc(12px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .cursos {
+        gap: calc(28px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .curso-capa {
+        height: calc(115px * var(--home-scale));
+        border-radius: calc(9px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .curso-rodape {
+        margin-top: calc(6px * var(--home-scale));
+        font-size: calc(12px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .progresso-circulo {
+        right: calc(8px * var(--home-scale));
+        bottom: calc(7px * var(--home-scale));
+        width: calc(34px * var(--home-scale));
+        height: calc(34px * var(--home-scale));
+        border-width: calc(4px * var(--home-scale));
+        font-size: calc(11px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .areas {
+        margin-top: calc(28px * var(--home-scale));
+        padding: calc(14px * var(--home-scale)) calc(18px * var(--home-scale)) calc(24px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .areas .secao-topo,
+    body:has(#lista-cursos) .areas .filtros {
+        gap: calc(8px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .areas .secao-topo {
+        margin-bottom: calc(10px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .areas .busca {
+        flex-basis: calc(108px * var(--home-scale)) !important;
+        width: calc(108px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .areas .select,
+    body:has(#lista-cursos) .area-select {
+        flex-basis: calc(84px * var(--home-scale));
+        width: calc(84px * var(--home-scale));
+        height: calc(22px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area-select summary {
+        height: calc(22px * var(--home-scale));
+        padding: 0 calc(19px * var(--home-scale)) 0 calc(7px * var(--home-scale));
+        line-height: calc(22px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area-select summary:after {
+        top: calc(7px * var(--home-scale));
+        right: calc(8px * var(--home-scale));
+        width: calc(7px * var(--home-scale));
+        height: calc(7px * var(--home-scale));
+        border-top-width: calc(2px * var(--home-scale));
+        border-left-width: calc(2px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area-select:not([open]) summary:after {
+        top: calc(3px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes {
+        top: calc(18px * var(--home-scale));
+        width: calc(84px * var(--home-scale));
+        padding: calc(2px * var(--home-scale)) 0;
+        border-width: calc(1px * var(--home-scale));
+        border-radius: calc(7px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area-select-opcoes button {
+        height: calc(16px * var(--home-scale));
+        padding: 0 calc(6px * var(--home-scale));
+        font-size: calc(12px * var(--home-scale));
+        line-height: calc(16px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .areas .filtros:after,
+    body:has(#lista-cursos) section:not(.areas) .filtros:after {
+        width: calc(20px * var(--home-scale));
+        font-size: calc(17px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .grade-areas {
+        gap: calc(10px * var(--home-scale)) calc(28px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area {
+        grid-template-columns: calc(107px * var(--home-scale)) calc(20px * var(--home-scale));
+        gap: calc(8px * var(--home-scale));
+        min-width: calc(135px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area > div {
+        width: calc(107px * var(--home-scale));
+        height: calc(39px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area > div > .tag {
+        top: calc(21px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area > div > .tag:first-of-type {
+        left: calc(109px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area > div > .tag:nth-of-type(2) {
+        left: calc(145px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area-capa {
+        width: calc(107px * var(--home-scale));
+        height: calc(39px * var(--home-scale));
+        padding: 0 calc(10px * var(--home-scale));
+        border-radius: calc(7px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .area-capa span {
+        font-size: calc(15px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .estrela {
+        width: calc(18px * var(--home-scale));
+        height: calc(18px * var(--home-scale));
+        margin-top: calc(2px * var(--home-scale));
+        font-size: calc(17px * var(--home-scale)) !important;
+        line-height: calc(18px * var(--home-scale));
+    }
+
+    body:has(#lista-cursos) .tag {
+        height: calc(16px * var(--home-scale));
+        padding: calc(2px * var(--home-scale)) calc(5px * var(--home-scale));
+        border-radius: calc(8px * var(--home-scale));
+        font-size: calc(9px * var(--home-scale));
+        line-height: calc(12px * var(--home-scale));
+    }
+}
