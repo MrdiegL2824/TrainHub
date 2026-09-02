@@ -181,3 +181,17 @@ if (session_status() === PHP_SESSION_NONE) {
 
     session_start();
 }
+
+if (!headers_sent()) {
+    ob_start(static function (string $conteudo): string {
+        if (stripos($conteudo, '</head>') === false || stripos($conteudo, 'css/responsivo.css') !== false) {
+            return $conteudo;
+        }
+        return preg_replace(
+            '/<\/head>/i',
+            '<link rel="stylesheet" href="css/responsivo.css?v=1.0"></head>',
+            $conteudo,
+            1
+        ) ?? $conteudo;
+    });
+}

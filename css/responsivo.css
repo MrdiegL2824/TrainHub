@@ -1,0 +1,25 @@
+/* O conteúdo acompanha a largura disponível sem criar colunas laterais vazias. */
+html, body {
+    width: 100%;
+    min-width: 0;
+}
+
+main.max-w-4xl,
+main.max-w-5xl,
+main.max-w-6xl {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: clamp(1rem, 3vw, 4rem) !important;
+    padding-right: clamp(1rem, 3vw, 4rem) !important;
+}
+
+@media (min-width: 1600px) {
+    main.max-w-4xl,
+    main.max-w-5xl,
+    main.max-w-6xl {
+        padding-left: 4vw !important;
+        padding-right: 4vw !important;
+    }
+}
