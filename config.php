@@ -187,11 +187,15 @@ if (!headers_sent()) {
         if (stripos($conteudo, '</head>') === false || stripos($conteudo, 'css/responsivo.css') !== false) {
             return $conteudo;
         }
-        return preg_replace(
+        $conteudo = preg_replace(
             '/<\/head>/i',
             '<link rel="stylesheet" href="css/responsivo.css?v=1.0"></head>',
             $conteudo,
             1
         ) ?? $conteudo;
+        if (stripos($conteudo, 'class="estrela"') !== false) {
+            $conteudo = preg_replace('/<\/body>/i', '<script src="js/dashboard.js?v=1.0"></script></body>', $conteudo, 1) ?? $conteudo;
+        }
+        return $conteudo;
     });
 }
