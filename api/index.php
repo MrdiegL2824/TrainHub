@@ -21,6 +21,7 @@ $pages = [
     '/treinamento-detalhe.php' => 'treinamento-detalhe.php',
     '/aulas.php' => 'aulas.php',
     '/aula-template.php' => 'aula-template.php',
+    '/materiais.php' => 'materiais.php',
     '/competencias.php' => 'competencias.php',
     '/usuarios.php' => 'usuarios.php',
     '/logout.php' => 'logout.php',

@@ -2,9 +2,10 @@
 require_once 'config.php'; exigirLogin();
 if (!temPerfil('admin')) { http_response_code(403); exit('Acesso restrito aos administradores.'); }
 $tipo = (string) ($_GET['tipo'] ?? '');
-$config = ['usuarios' => ['Usuários', 'usuarios.php'], 'treinamentos' => ['Treinamentos', 'treinamentos.php'], 'aulas' => ['Aulas', 'aulas.php'], 'pendentes' => ['Treinamentos pendentes', 'treinamentos.php'], 'materiais' => ['Materiais', 'aulas.php']];
+$config = ['usuarios' => ['Usuários', 'usuarios.php'], 'treinamentos' => ['Treinamentos', 'treinamentos.php'], 'aulas' => ['Aulas', 'aulas.php'], 'pendentes' => ['Treinamentos pendentes', 'treinamentos.php'], 'materiais' => ['Materiais', 'materiais.php']];
 if (!isset($config[$tipo])) { http_response_code(404); exit('Área administrativa não encontrada.'); }
 if ($tipo === 'usuarios') { redirecionar('usuarios.php'); }
+if ($tipo === 'materiais') { redirecionar('materiais.php'); }
 [$titulo, $origem] = $config[$tipo]; $itens = [];
 if ($tipo === 'usuarios') { $itens = $pdo->query('SELECT nome, email, perfil, ativo FROM usuarios ORDER BY nome')->fetchAll(); }
 elseif ($tipo === 'treinamentos') { $itens = $pdo->query('SELECT t.titulo, t.status, t.carga_horaria, a.nome AS grupo FROM treinamentos t JOIN areas a ON a.id=t.area_id ORDER BY t.criado_em DESC')->fetchAll(); }

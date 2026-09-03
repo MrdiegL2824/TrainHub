@@ -7,7 +7,7 @@
   },
   "routes": [
     { "src": "^/api/(auth|google-auth|suporte)\\.php$", "dest": "/api/index.php?path=/api/$1.php" },
-    { "src": "^/(index|cadastro|admin-cadastrar-usuario|recuperar-senha|inicio|dashboard|admin-dashboard|admin-gerenciar|areas|treinamentos|treinamento-detalhe|aulas|aula-template|competencias|usuarios|logout)\\.php$", "dest": "/api/index.php?path=/$1.php" },
+    { "src": "^/(index|cadastro|admin-cadastrar-usuario|recuperar-senha|inicio|dashboard|admin-dashboard|admin-gerenciar|areas|treinamentos|treinamento-detalhe|aulas|aula-template|materiais|competencias|usuarios|logout)\\.php$", "dest": "/api/index.php?path=/$1.php" },
     { "src": "^/$", "dest": "/api/index.php?path=/index.php" }
   ],
   "headers": [
