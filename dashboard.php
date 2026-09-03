@@ -230,7 +230,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
         .admin-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            grid-template-rows: 274px 83px;
+            grid-template-rows: 286px 83px;
             gap: 31px 19px;
             margin-top: 19px;
         }
@@ -365,6 +365,13 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             background: var(--painel);
         }
 
+        .suporte-box,
+        .admin-grid > .espaco-livre {
+            align-self: start;
+            height: 274px;
+            margin-top: 11px;
+        }
+
         .rodape-box {
             grid-column: 2 / 5;
             display: flex;
@@ -427,6 +434,13 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
 
             .atividades-box {
                 grid-row: auto;
+                min-height: 274px;
+            }
+
+            .suporte-box,
+            .admin-grid > .espaco-livre {
+                height: auto;
+                margin-top: 0;
                 min-height: 274px;
             }
 
