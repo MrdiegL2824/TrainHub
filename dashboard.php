@@ -25,13 +25,13 @@ try {
     ];
 
     $atividades = $pdo->query(
-        "SELECT u.nome, 'criou o treinamento' AS acao, t.titulo AS item, t.criado_em
+        "SELECT u.nome, a.acao, a.descricao AS item, a.criado_em
+         FROM atividades a
+         JOIN usuarios u ON u.id = a.usuario_id
+         UNION ALL
+         SELECT u.nome, 'criou o treinamento' AS acao, t.titulo AS item, t.criado_em
          FROM treinamentos t
          JOIN usuarios u ON u.id = t.criado_por
-         UNION ALL
-         SELECT u.nome, 'enviou uma solicitação' AS acao, 'pedido de suporte' AS item, s.criado_em
-         FROM pedidos_suporte s
-         JOIN usuarios u ON u.id = s.usuario_id
          ORDER BY criado_em DESC
          LIMIT 8"
     )->fetchAll();

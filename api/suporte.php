@@ -17,5 +17,7 @@ if ($usuarioId < 1 || $mensagem === '') {
 
 $stmt = $pdo->prepare("INSERT INTO pedidos_suporte (usuario_id, mensagem) VALUES (?, ?)");
 $stmt->execute([$usuarioId, $mensagem]);
+$stmt = $pdo->prepare("INSERT INTO atividades (usuario_id, acao, descricao) VALUES (?, 'enviou um pedido de suporte', 'pedido de suporte')");
+$stmt->execute([$usuarioId]);
 unset($_SESSION['usuario_bloqueado_id'], $_SESSION['usuario_bloqueado_nome'], $_SESSION['usuario_bloqueado_email']);
 redirecionar('index.php?suporte=enviado');

@@ -69,9 +69,19 @@ if ($usingPostgres) {
 } else {
     try {
         $pdo->exec('ALTER TABLE usuarios MODIFY email VARCHAR(180) NULL');
+    } catch (Throwable $e) {
+        error_log('TrainHub local email schema setup failed: ' . $e->getMessage());
+    }
+    try {
         $pdo->exec('ALTER TABLE usuarios ADD COLUMN codigo_acesso VARCHAR(32) NULL UNIQUE');
     } catch (Throwable $e) {
         // A instalação local já pode conter essa coluna.
+    }
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS atividades (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, usuario_id INT UNSIGNED NULL, acao VARCHAR(120) NOT NULL, descricao TEXT NOT NULL, criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, INDEX idx_atividades_criado_em (criado_em), CONSTRAINT fk_atividades_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS pedidos_suporte (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, usuario_id INT UNSIGNED NOT NULL, mensagem TEXT NOT NULL, status VARCHAR(20) NOT NULL DEFAULT 'pendente', resposta TEXT NULL, criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, INDEX idx_suporte_status (status), CONSTRAINT fk_suporte_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (Throwable $e) {
+        error_log('TrainHub local schema setup failed: ' . $e->getMessage());
     }
 }
 

@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare(
                         "INSERT INTO atividades (usuario_id, acao, descricao) VALUES (?, 'cadastrou o usuário', ?)"
                     );
-                    $stmt->execute([(int) $_SESSION['usuario_id'], 'Criou o usuário "' . $nome . '"']);
+                    $stmt->execute([(int) $_SESSION['usuario_id'], $nome]);
                     $pdo->commit();
 
                     $sucesso = 'Cliente cadastrado com sucesso.';
