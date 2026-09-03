@@ -10,6 +10,7 @@ $pages = [
     '/' => 'index.php',
     '/index.php' => 'index.php',
     '/cadastro.php' => 'cadastro.php',
+    '/admin-cadastrar-usuario.php' => 'admin-cadastrar-usuario.php',
     '/recuperar-senha.php' => 'recuperar-senha.php',
     '/inicio.php' => 'inicio.php',
     '/dashboard.php' => 'dashboard.php',

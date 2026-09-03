@@ -556,7 +556,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
 
             <section class="admin-box rodape-box" aria-label="Log de erros">
                 <div class="erros-link">Log de erros</div>
-                <div class="rodape-vazio" aria-hidden="true"></div>
+                <a class="rodape-vazio cadastro-admin-link" href="admin-cadastrar-usuario.php" aria-label="Cadastrar usuário">Cadastrar cliente</a>
                 <div class="rodape-vazio" aria-hidden="true"></div>
             </section>
         </section>

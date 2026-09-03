@@ -143,6 +143,7 @@ CREATE TABLE `usuarios` (
   `google_id` varchar(120) DEFAULT NULL,
   `auth_provider` enum('local','google') NOT NULL DEFAULT 'local',
   `perfil` enum('admin','instrutor') NOT NULL DEFAULT 'instrutor',
+  `codigo_acesso` varchar(32) DEFAULT NULL,
   `ativo` tinyint(1) NOT NULL DEFAULT 1,
   `criado_em` datetime NOT NULL DEFAULT current_timestamp(),
   `atualizado_em` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
