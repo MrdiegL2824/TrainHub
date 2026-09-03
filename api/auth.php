@@ -12,15 +12,13 @@ $senha = isset($_POST['senha']) ? trim($_POST['senha']) : '';
     }
 
     try {
-        $stmt = $pdo->prepare("SELECT id, nome, email, senha_hash, perfil, ativo, codigo_acesso FROM usuarios WHERE LOWER(email) = LOWER(?) OR LOWER(nome) = LOWER(?) LIMIT 1");
+        $stmt = $pdo->prepare("SELECT id, nome, email, senha_hash, perfil, ativo FROM usuarios WHERE LOWER(email) = LOWER(?) OR LOWER(nome) = LOWER(?) LIMIT 1");
         $stmt->execute([$email, $email]);
         $usuario = $stmt->fetch();
         $senhaValida = false;
         if ($usuario) {
             if (!empty($usuario['senha_hash'])) {
                 $senhaValida = password_verify($senha, (string) $usuario['senha_hash']);
-            } elseif (!empty($usuario['codigo_acesso'])) {
-                $senhaValida = hash_equals((string) $usuario['codigo_acesso'], $senha);
             }
         }
 

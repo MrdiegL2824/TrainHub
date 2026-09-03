@@ -53,7 +53,7 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
             <?php if ($erro !== ''): ?><p class="aviso-erro"><?php echo esc($erro); ?></p><?php endif; ?>
             <form action="api/auth.php" method="POST">
                 <?php echo csrfInput(); ?>
-                <input class="campo" type="email" id="email" name="email" placeholder="email" aria-label="E-mail" required>
+                <input class="campo" type="text" id="email" name="email" placeholder="email ou nome de usuário" aria-label="E-mail ou nome de usuário" required>
                 <input class="campo" type="password" id="senha" name="senha" placeholder="senha" aria-label="Senha" required>
                 <a class="esqueci" href="recuperar-senha.php">esqueci minha senha</a>
                 <button class="botao-entrar" type="submit">ENTRAR</button>
