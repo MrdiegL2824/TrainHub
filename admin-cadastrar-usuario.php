@@ -9,33 +9,8 @@ if (!temPerfil('admin')) {
     exit('Acesso restrito aos administradores.');
 }
 
-function gerarCodigoAcesso(): string
-{
-    $maiusculas = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-    $minusculas = 'abcdefghijkmnopqrstuvwxyz';
-    $numeros = '23456789';
-    $todos = $maiusculas . $minusculas . $numeros;
-    $codigo = [
-        $maiusculas[random_int(0, strlen($maiusculas) - 1)],
-        $minusculas[random_int(0, strlen($minusculas) - 1)],
-        $numeros[random_int(0, strlen($numeros) - 1)],
-    ];
-
-    while (count($codigo) < 12) {
-        $codigo[] = $todos[random_int(0, strlen($todos) - 1)];
-    }
-
-    for ($i = count($codigo) - 1; $i > 0; $i--) {
-        $j = random_int(0, $i);
-        [$codigo[$i], $codigo[$j]] = [$codigo[$j], $codigo[$i]];
-    }
-
-    return implode('', $codigo);
-}
-
 $erro = '';
 $sucesso = '';
-$codigoGerado = '';
 $nome = '';
 $email = '';
 
@@ -52,30 +27,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $erro = 'Informe um e-mail válido.';
     } elseif (strlen($senha) < 8) {
-        $erro = 'A senha inicial deve ter pelo menos 8 caracteres.';
+        $erro = 'A senha deve ter pelo menos 8 caracteres.';
     } elseif ($senha !== $confirmarSenha) {
         $erro = 'As senhas não conferem.';
     } else {
         try {
-            $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE LOWER(email) = LOWER(?) LIMIT 1');
-            $stmt->execute([$email]);
+            $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE LOWER(nome) = LOWER(?) LIMIT 1');
+            $stmt->execute([$nome]);
             if ($stmt->fetchColumn() !== false) {
-                $erro = 'Já existe um usuário com este e-mail.';
+                $erro = 'Já existe um usuário com este nome.';
             } else {
-                for ($tentativa = 0; $tentativa < 5; $tentativa++) {
-                    $codigo = gerarCodigoAcesso();
-                    $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE codigo_acesso = ? LIMIT 1');
-                    $stmt->execute([$codigo]);
-                    if ($stmt->fetchColumn() !== false) {
-                        continue;
-                    }
-
+                $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE LOWER(email) = LOWER(?) LIMIT 1');
+                $stmt->execute([$email]);
+                if ($stmt->fetchColumn() !== false) {
+                    $erro = 'Já existe um usuário com este e-mail.';
+                } else {
                     $pdo->beginTransaction();
                     $stmt = $pdo->prepare(
-                        "INSERT INTO usuarios (nome, email, senha_hash, perfil, ativo, auth_provider, codigo_acesso)
-                         VALUES (?, ?, ?, 'instrutor', TRUE, 'local', ?)"
+                        "INSERT INTO usuarios (nome, email, senha_hash, perfil, ativo, auth_provider)
+                         VALUES (?, ?, ?, 'instrutor', TRUE, 'local')"
                     );
-                    $stmt->execute([$nome, $email, password_hash($senha, PASSWORD_DEFAULT), $codigo]);
+                    $stmt->execute([$nome, $email, password_hash($senha, PASSWORD_DEFAULT)]);
 
                     $stmt = $pdo->prepare(
                         "INSERT INTO atividades (usuario_id, acao, descricao) VALUES (?, 'cadastrou o usuário', ?)"
@@ -83,15 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute([(int) $_SESSION['usuario_id'], 'Criou o usuário "' . $nome . '"']);
                     $pdo->commit();
 
-                    $codigoGerado = $codigo;
-                    $sucesso = 'Usuário cadastrado com sucesso. Guarde o código de acesso com segurança.';
+                    $sucesso = 'Cliente cadastrado com sucesso.';
                     $nome = '';
                     $email = '';
-                    break;
-                }
-
-                if ($codigoGerado === '' && $erro === '') {
-                    $erro = 'Não foi possível gerar um código único agora. Tente novamente.';
                 }
             }
         } catch (Throwable $e) {
@@ -99,20 +65,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->rollBack();
             }
             error_log('TrainHub admin user creation failed: ' . $e->getMessage());
-            $erro = 'Não foi possível cadastrar o usuário agora.';
+            $erro = 'Não foi possível cadastrar o cliente agora.';
         }
     }
 }
 
 $usuariosRecentes = $pdo->query(
-    'SELECT nome, email, codigo_acesso, ativo FROM usuarios WHERE codigo_acesso IS NOT NULL ORDER BY criado_em DESC LIMIT 8'
+    "SELECT nome, email, ativo FROM usuarios WHERE perfil = 'instrutor' ORDER BY criado_em DESC LIMIT 8"
 )->fetchAll();
 ?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TrainHub - Cadastrar usuário</title>
+    <title>TrainHub - Cadastrar cliente</title>
     <style>
         :root { color-scheme: dark; --fundo:#293346; --barra:#343a43; --painel:#3c4961; --escuro:#202838; --texto:#f4f5f8; --secundario:#b5bdcb; --azul:#3159b2; }
         * { box-sizing: border-box; }
@@ -134,18 +100,12 @@ $usuariosRecentes = $pdo->query(
         .aviso { margin:0 0 18px; padding:11px 13px; border-radius:9px; font-weight:700; }
         .erro { background:#7e2228; color:#fff; }
         .sucesso { background:#1d714b; color:#fff; }
-        .codigo { max-width:680px; margin-top:22px; padding:18px; border:1px solid #77a4ff; border-radius:12px; background:#202b42; }
-        .codigo strong { display:block; margin-bottom:10px; }
-        .codigo-linha { display:flex; gap:10px; }
-        .codigo-linha input { letter-spacing:2px; font-weight:700; }
-        .codigo-linha button { flex:0 0 auto; }
         .recentes { margin-top:30px; }
         .recentes h2 { margin:0 0 12px; font-size:18px; }
         .lista { display:grid; gap:8px; }
-        .item { display:grid; grid-template-columns:1fr 1.2fr 160px 90px; gap:12px; align-items:center; padding:10px 12px; border-radius:8px; background:var(--escuro); color:var(--secundario); font-size:13px; }
+        .item { display:grid; grid-template-columns:1fr 1.2fr 90px; gap:12px; align-items:center; padding:10px 12px; border-radius:8px; background:var(--escuro); color:var(--secundario); font-size:13px; }
         .item strong { color:var(--texto); }
-        .item code { color:#b8d0ff; }
-        @media (max-width:760px) { main { width:calc(100% - 28px); margin-top:22px; } .painel { padding:20px; } .item { grid-template-columns:1fr; gap:4px; } .codigo-linha { flex-direction:column; } }
+        @media (max-width:760px) { main { width:calc(100% - 28px); margin-top:22px; } .painel { padding:20px; } .item { grid-template-columns:1fr; gap:4px; } }
     </style>
 </head>
 <body>
@@ -157,7 +117,7 @@ $usuariosRecentes = $pdo->query(
         <a class="voltar" href="dashboard.php" aria-label="Voltar">←</a>
         <section class="painel">
             <h1>Cadastrar cliente</h1>
-            <p class="subtitulo">Crie uma conta para o cliente e gere um código único de acesso.</p>
+            <p class="subtitulo">O administrador cria o acesso informando nome de usuário, e-mail e senha.</p>
             <?php if ($erro !== ''): ?><p class="aviso erro"><?php echo esc($erro); ?></p><?php endif; ?>
             <?php if ($sucesso !== ''): ?><p class="aviso sucesso"><?php echo esc($sucesso); ?></p><?php endif; ?>
             <form class="formulario" method="post">
@@ -168,32 +128,22 @@ $usuariosRecentes = $pdo->query(
                 <label for="email">E-mail
                     <input id="email" name="email" type="email" maxlength="180" value="<?php echo esc($email); ?>" required>
                 </label>
-                <label for="senha">Senha inicial
+                <label for="senha">Senha
                     <input id="senha" name="senha" type="password" minlength="8" required>
                 </label>
-                <label for="confirmar_senha">Confirmar senha inicial
+                <label for="confirmar_senha">Confirmar senha
                     <input id="confirmar_senha" name="confirmar_senha" type="password" minlength="8" required>
                 </label>
-                <button type="submit">Cadastrar usuário e gerar código</button>
+                <button type="submit">Cadastrar cliente</button>
             </form>
-            <?php if ($codigoGerado !== ''): ?>
-                <div class="codigo">
-                    <strong>Código único de acesso</strong>
-                    <div class="codigo-linha">
-                        <input id="codigo-gerado" type="text" value="<?php echo esc($codigoGerado); ?>" readonly aria-label="Código único gerado">
-                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('codigo-gerado').value)">Copiar código</button>
-                    </div>
-                </div>
-            <?php endif; ?>
             <?php if ($usuariosRecentes): ?>
                 <div class="recentes">
-                    <h2>Usuários cadastrados pelo administrador</h2>
+                    <h2>Clientes cadastrados</h2>
                     <div class="lista">
                         <?php foreach ($usuariosRecentes as $usuario): ?>
                             <div class="item">
                                 <strong><?php echo esc($usuario['nome']); ?></strong>
                                 <span><?php echo esc($usuario['email']); ?></span>
-                                <code><?php echo esc($usuario['codigo_acesso']); ?></code>
                                 <span><?php echo $usuario['ativo'] ? 'Ativo' : 'Bloqueado'; ?></span>
                             </div>
                         <?php endforeach; ?>

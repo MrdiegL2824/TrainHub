@@ -138,7 +138,7 @@ CREATE TABLE `treinamentos` (
 CREATE TABLE `usuarios` (
   `id` int(10) UNSIGNED NOT NULL,
   `nome` varchar(120) NOT NULL,
-  `email` varchar(180) NOT NULL,
+  `email` varchar(180) DEFAULT NULL,
   `senha_hash` varchar(255) DEFAULT NULL,
   `google_id` varchar(120) DEFAULT NULL,
   `auth_provider` enum('local','google') NOT NULL DEFAULT 'local',
