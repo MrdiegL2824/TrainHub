@@ -244,6 +244,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
 
         .atividades-box {
             grid-row: 1 / 3;
+            height: 402px;
         }
 
         .box-titulo {
@@ -434,6 +435,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
 
             .atividades-box {
                 grid-row: auto;
+                height: auto;
                 min-height: 274px;
             }
 
