@@ -8,7 +8,11 @@ $mensagens = [
     'erro_interno' => 'Não foi possível concluir o login agora.',
     'suporte_campos' => 'Escreva uma mensagem para solicitar suporte.',
 ];
+$mensagensSucesso = [
+    'enviado' => 'Pedido de suporte enviado ao administrador.',
+];
 $erro = $mensagens[$_GET['erro'] ?? ''] ?? '';
+$sucesso = $mensagensSucesso[$_GET['suporte'] ?? ''] ?? '';
 $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
 ?><!DOCTYPE html>
 <html lang="pt-BR">
@@ -32,6 +36,7 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
         .botao-entrar:hover { background: #3958c6; }
         .cadastro-restrito { display: block; margin-top: 15px; color: #7184b2; font-size: 12px; }
         .aviso-erro { margin: 0 0 12px; padding: 7px 9px; border-radius: 8px; background: rgba(180, 20, 20, .82); color: #fff; font-size: 11px; font-weight: 700; }
+        .aviso-sucesso { margin: 0 0 12px; padding: 7px 9px; border-radius: 8px; background: rgba(24, 126, 79, .88); color: #fff; font-size: 11px; font-weight: 700; }
         .modal-fundo { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; padding: 20px; background: rgba(0, 0, 0, .62); }
         .modal { width: min(430px, 100%); padding: 26px; border: 1px solid #31558b; border-radius: 16px; background: #101a2b; box-shadow: 0 12px 40px rgba(0, 0, 0, .45); }
         .modal h2 { margin: 0 0 10px; font-size: 22px; }
@@ -51,6 +56,7 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
         <h1 class="marca">TrainHub</h1>
         <section class="cartao-login" aria-label="Formulário de login">
             <?php if ($erro !== ''): ?><p class="aviso-erro"><?php echo esc($erro); ?></p><?php endif; ?>
+            <?php if ($sucesso !== ''): ?><p class="aviso-sucesso"><?php echo esc($sucesso); ?></p><?php endif; ?>
             <form action="api/auth.php" method="POST">
                 <?php echo csrfInput(); ?>
                 <input class="campo" type="text" id="email" name="email" placeholder="email ou nome de usuário" aria-label="E-mail ou nome de usuário" required>

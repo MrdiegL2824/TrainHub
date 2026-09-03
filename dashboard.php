@@ -7,6 +7,25 @@ if (!temPerfil('admin')) {
     exit('Acesso restrito aos administradores.');
 }
 
+$mensagemSuporte = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && validarCsrf($_POST['csrf_token'] ?? null)) {
+    $suporteId = (int) ($_POST['suporte_id'] ?? 0);
+    if (($_POST['acao'] ?? '') === 'resolver_suporte' && $suporteId > 0) {
+        try {
+            $stmt = $pdo->prepare("UPDATE pedidos_suporte SET status = 'resolvido', atualizado_em = CURRENT_TIMESTAMP WHERE id = ? AND status = 'pendente'");
+            $stmt->execute([$suporteId]);
+            if ($stmt->rowCount() > 0) {
+                $stmt = $pdo->prepare("INSERT INTO atividades (usuario_id, acao, descricao) VALUES (?, 'resolveu o pedido de suporte', 'pedido de suporte')");
+                $stmt->execute([(int) $_SESSION['usuario_id']]);
+                $mensagemSuporte = 'Pedido de suporte marcado como resolvido.';
+            }
+        } catch (Throwable $e) {
+            error_log('TrainHub support resolution failed: ' . $e->getMessage());
+            $mensagemSuporte = 'Não foi possível atualizar o pedido de suporte.';
+        }
+    }
+}
+
 $tiposMetricas = [
     'usuarios' => 'Usuários',
     'treinamentos' => 'Treinamentos',
@@ -350,6 +369,22 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             color: #e8ebf1;
         }
 
+        .suporte-resolver {
+            display: block;
+            margin-top: 5px;
+            border: 0;
+            border-radius: 5px;
+            padding: 3px 6px;
+            background: #2a3c5d;
+            color: #dce5f7;
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .suporte-resolver:hover {
+            background: #436bc7;
+        }
+
         .suporte-vazio {
             display: flex;
             height: 224px;
@@ -536,6 +571,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
                         <span class="suporte-badge" aria-label="<?php echo count($suportes); ?> pedidos pendentes"><?php echo count($suportes); ?></span>
                     <?php endif; ?>
                 </h2>
+                <?php if ($mensagemSuporte !== ''): ?><p class="suporte-vazio" style="height:auto;padding:8px 10px;color:#9de0bd;"><?php echo esc($mensagemSuporte); ?></p><?php endif; ?>
                 <?php if (!$suportes): ?>
                     <p class="suporte-vazio">Nenhum pedido de suporte pendente.</p>
                 <?php else: ?>
@@ -545,6 +581,12 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
                                 <strong><?php echo esc($suporte['nome']); ?></strong>
                                 <span class="suporte-mensagem"><?php echo esc($suporte['mensagem']); ?></span>
                                 <span class="suporte-email"><?php echo esc($suporte['email']); ?></span>
+                                <form method="post">
+                                    <?php echo csrfInput(); ?>
+                                    <input type="hidden" name="acao" value="resolver_suporte">
+                                    <input type="hidden" name="suporte_id" value="<?php echo (int) $suporte['id']; ?>">
+                                    <button class="suporte-resolver" type="submit">Marcar como resolvido</button>
+                                </form>
                             </article>
                         <?php endforeach; ?>
                     </div>
