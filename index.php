@@ -36,6 +36,8 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
         .esqueci:hover { text-decoration: underline; }
         .botao-entrar { width: 100%; height: 44px; border: 0; border-radius: 10px; background: #263e9e; color: #fff; font-size: 18px; font-weight: 700; line-height: 1; cursor: pointer; }
         .botao-entrar:hover { background: #3958c6; }
+        .lembrar { display: flex; align-items: center; gap: 7px; margin: -4px 4px 14px; color: #b9c7e5; font-size: 12px; cursor: pointer; }
+        .lembrar input { width: 14px; height: 14px; margin: 0; accent-color: #5577dc; }
         .cadastro-restrito { display: block; margin-top: 15px; color: #7184b2; font-size: 12px; }
         .aviso-erro { margin: 0 0 12px; padding: 7px 9px; border-radius: 8px; background: rgba(180, 20, 20, .82); color: #fff; font-size: 11px; font-weight: 700; }
         .aviso-sucesso { margin: 0 0 12px; padding: 7px 9px; border-radius: 8px; background: rgba(24, 126, 79, .88); color: #fff; font-size: 11px; font-weight: 700; }
@@ -65,6 +67,7 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
                 <?php echo csrfInput(); ?>
                 <input class="campo" type="text" id="email" name="email" placeholder="email ou nome de usuário" aria-label="E-mail ou nome de usuário" required>
                 <input class="campo" type="password" id="senha" name="senha" placeholder="senha" aria-label="Senha" required>
+                <label class="lembrar"><input type="checkbox" name="lembrar" value="1"> Lembrar de mim neste dispositivo</label>
                 <a class="esqueci" href="recuperar-senha.php">esqueci minha senha</a>
                 <button class="botao-entrar" type="submit">ENTRAR</button>
             </form>

@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !validarCsrf($_POST['csrf_token'] ?
 
 $identificador = trim((string) ($_POST['email'] ?? ''));
 $senha = (string) ($_POST['senha'] ?? '');
+$lembrar = !empty($_POST['lembrar']);
 
 if ($identificador === '' || $senha === '') {
     redirecionar('index.php?erro=campos_vazios');
@@ -68,6 +69,12 @@ try {
     $_SESSION['usuario_email'] = (string) ($usuario['email'] ?? '');
     $_SESSION['logado'] = true;
     $_SESSION['usuario_perfil'] = (string) $usuario['perfil'];
+
+    if ($lembrar) {
+        criarLoginLembrado((int) $usuario['id']);
+    } else {
+        revogarLoginLembrado();
+    }
 
     garantirMatriculasPublicadas($pdo, (int) $usuario['id']);
     redirecionar('inicio.php');

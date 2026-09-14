@@ -5,6 +5,18 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
     aplicado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS login_tokens (
+    selector VARCHAR(64) PRIMARY KEY,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    expira_em TIMESTAMPTZ NOT NULL,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ultimo_uso_em TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_login_tokens_usuario ON login_tokens(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_login_tokens_expira ON login_tokens(expira_em);
+
 ALTER TABLE aulas ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'publicado';
 ALTER TABLE avaliacoes ADD COLUMN IF NOT EXISTS ativa BOOLEAN NOT NULL DEFAULT TRUE;
 ALTER TABLE avaliacoes ADD COLUMN IF NOT EXISTS max_tentativas SMALLINT NOT NULL DEFAULT 3;
