@@ -151,7 +151,35 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             align-items: center;
             width: 30px;
             height: 34px;
+            position: relative;
+            border: 0;
+            outline: 0;
+            box-shadow: none;
             opacity: .82;
+        }
+
+        .admin-logo::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 36px;
+            left: 0;
+            z-index: 10;
+            pointer-events: none;
+            white-space: nowrap;
+            border-radius: 5px;
+            padding: 5px 8px;
+            background: #111722;
+            color: #eef2fb;
+            font-size: 11px;
+            opacity: 0;
+            transform: translateY(-3px);
+            transition: opacity .15s ease, transform .15s ease;
+        }
+
+        .admin-logo:hover::after,
+        .admin-logo:focus-visible::after {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .admin-logo img {
@@ -159,6 +187,8 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             width: 30px;
             height: 30px;
             object-fit: contain;
+            border: 0;
+            outline: 0;
         }
 
         .admin-avatar {
@@ -308,8 +338,8 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             border-radius: 7px;
             background: var(--escuro);
             color: #e5e8ef;
-            font-size: 10px;
-            line-height: 12px;
+            font-size: 13px;
+            line-height: 16px;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
@@ -425,7 +455,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
         .admin-grid > .espaco-livre {
             align-self: start;
             height: 274px;
-            margin-top: 11px;
+            margin-top: 0;
         }
 
         .rodape-box {
@@ -440,16 +470,30 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
         .erros-link,
         .rodape-vazio {
             display: flex;
-            width: 156px;
-            height: 57px;
+            width: 176px;
+            height: 66px;
             align-items: center;
             justify-content: center;
             border-radius: 12px;
             background: var(--escuro);
             color: #f1f2f5;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             text-decoration: none;
+        }
+
+        .erro-acao {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .erro-badge {
+            position: static;
+            flex: 0 0 auto;
+            width: 23px;
+            height: 23px;
+            font-size: 12px;
         }
 
         .erros-link:hover,
@@ -546,7 +590,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
 </head>
 <body>
     <header class="admin-topo">
-        <a class="admin-logo" href="inicio.php" aria-label="Voltar para o início">
+        <a class="admin-logo" href="inicio.php" aria-label="Voltar para o início" title="Voltar para a área inicial" data-tooltip="Voltar para a área inicial">
             <img src="assets/logo.png" alt="TrainHub">
         </a>
         <a class="admin-avatar" href="perfil.php" aria-label="Abrir perfil"></a>
@@ -616,7 +660,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             </section>
 
             <section class="admin-box rodape-box" aria-label="Log de erros">
-                <a class="erros-link" href="logs-erros.php">Log de erros<?php if ($totalErros > 0): ?><span class="erro-badge"><?php echo $totalErros; ?></span><?php endif; ?></a>
+                <div class="erro-acao"><a class="erros-link" href="logs-erros.php">Log de erros</a><?php if ($totalErros > 0): ?><span class="erro-badge" aria-label="<?php echo $totalErros; ?> erros registrados"><?php echo $totalErros; ?></span><?php endif; ?></div>
                 <a class="rodape-vazio cadastro-admin-link" href="admin-cadastrar-usuario.php" aria-label="Cadastrar usuário">Cadastrar cliente</a>
                 <a class="rodape-vazio cadastro-admin-link" href="avaliacoes.php" aria-label="Gerenciar avaliações">Avaliações</a>
             </section>

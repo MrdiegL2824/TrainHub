@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label class="th-field" for="email">E-mail
                 <input id="email" name="email" type="email" maxlength="180" value="<?php echo esc($email); ?>" autocomplete="email" required>
             </label>
-            <button class="th-button" type="submit">Enviar instruções</button>
+            <button class="th-button" type="submit">Enviar</button>
         </form>
         <a class="reset-back" href="index.php">Voltar para o login</a>
     </section>
