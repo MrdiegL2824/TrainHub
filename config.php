@@ -455,16 +455,11 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!headers_sent()) {
     ob_start(static function (string $saida): string {
         $saida = preg_replace('/<img(?=[^>]*src="assets\/areas\/)/i', '<img loading="lazy" decoding="async"', $saida) ?? $saida;
-        if (stripos($saida, '</body>') === false || (
-            stripos($saida, 'th-back') === false
-            && stripos($saida, 'admin-voltar') === false
-            && stripos($saida, 'class="voltar"') === false
-            && stripos($saida, 'class="btn-voltar"') === false
-        )) {
+        if (stripos($saida, '</body>') === false) {
             return $saida;
         }
 
-        $script = '<script>(function(){document.addEventListener("click",function(event){var link=event.target.closest("a.th-back,a.admin-voltar,a.voltar,a.btn-voltar");if(!link||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey){return;}if(window.history.length>1){event.preventDefault();window.history.back();}});})();</script>';
+        $script = '<script>(function(){document.addEventListener("pointerover",function(event){var link=event.target.closest("a[href]");if(!link||link.dataset.prefetched||link.target==="_blank"||link.hasAttribute("download")){return;}var url;try{url=new URL(link.href,window.location.href);}catch(error){return;}if(url.origin!==window.location.origin||url.pathname.indexOf("/api/")===0||url.pathname.endsWith("/logout.php")||url.pathname===window.location.pathname&&url.search===window.location.search){return;}link.dataset.prefetched="1";var prefetch=document.createElement("link");prefetch.rel="prefetch";prefetch.href=url.href;document.head.appendChild(prefetch);},true);document.addEventListener("click",function(event){var link=event.target.closest("a.th-back,a.admin-voltar,a.voltar,a.btn-voltar");if(!link||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey){return;}if(window.history.length>1){event.preventDefault();window.history.back();}});})();</script>';
         return preg_replace('/<\/body>/i', $script . '</body>', $saida, 1) ?? $saida;
     });
 }
