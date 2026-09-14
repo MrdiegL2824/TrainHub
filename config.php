@@ -459,7 +459,19 @@ if (!headers_sent()) {
             return $saida;
         }
 
-        $script = '<script>(function(){document.addEventListener("pointerover",function(event){var link=event.target.closest("a[href]");if(!link||link.dataset.prefetched||link.target==="_blank"||link.hasAttribute("download")){return;}var url;try{url=new URL(link.href,window.location.href);}catch(error){return;}if(url.origin!==window.location.origin||url.pathname.indexOf("/api/")===0||url.pathname.endsWith("/logout.php")||url.pathname===window.location.pathname&&url.search===window.location.search){return;}link.dataset.prefetched="1";var prefetch=document.createElement("link");prefetch.rel="prefetch";prefetch.href=url.href;document.head.appendChild(prefetch);},true);document.addEventListener("click",function(event){var link=event.target.closest("a.th-back,a.admin-voltar,a.voltar,a.btn-voltar");if(!link||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey){return;}if(window.history.length>1){event.preventDefault();window.history.back();}});})();</script>';
-        return preg_replace('/<\/body>/i', $script . '</body>', $saida, 1) ?? $saida;
+        $loading = <<<'HTML'
+<style>
+#trainhub-loading{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:rgba(20,29,45,.74);opacity:0;pointer-events:none;transition:opacity .12s ease}
+#trainhub-loading.ativo{opacity:1;pointer-events:auto}
+.trainhub-loading-card{display:flex;align-items:center;gap:12px;padding:16px 22px;border-radius:12px;background:#1e2430;color:#eef2fb;box-shadow:0 10px 30px rgba(0,0,0,.3);font:600 14px Arial,Helvetica,sans-serif}
+.trainhub-spinner{width:25px;height:25px;border:3px solid rgba(238,242,251,.3);border-top-color:#4d6fff;border-radius:50%;animation:trainhub-spin .75s linear infinite}
+@keyframes trainhub-spin{to{transform:rotate(360deg)}}
+</style>
+<div id="trainhub-loading" role="status" aria-live="polite" aria-label="Carregando"><div class="trainhub-loading-card"><span class="trainhub-spinner" aria-hidden="true"></span><span>Carregando...</span></div></div>
+HTML;
+        $script = <<<'HTML'
+<script>(function(){var loading=document.getElementById('trainhub-loading');function mostrar(){if(loading){loading.classList.add('ativo');document.body.setAttribute('aria-busy','true');}}function esconder(){if(loading){loading.classList.remove('ativo');document.body.removeAttribute('aria-busy');}}function urlInterna(link){var url;try{url=new URL(link.href,window.location.href);}catch(error){return null;}if(url.origin!==window.location.origin||url.pathname.indexOf('/api/')===0||url.pathname.endsWith('/logout.php')||(url.pathname===window.location.pathname&&url.search===window.location.search)){return null;}return url;}document.addEventListener('pointerover',function(event){var alvo=event.target;var link=alvo&&alvo.closest?alvo.closest('a[href]'):null;if(!link||link.dataset.prefetched||link.target==='_blank'||link.hasAttribute('download')){return;}var url=urlInterna(link);if(!url){return;}link.dataset.prefetched='1';var prefetch=document.createElement('link');prefetch.rel='prefetch';prefetch.href=url.href;document.head.appendChild(prefetch);},true);document.addEventListener('click',function(event){var alvo=event.target;var link=alvo&&alvo.closest?alvo.closest('a[href]'):null;if(!link||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||link.target==='_blank'||link.hasAttribute('download')){return;}var voltar=link.matches('a.th-back,a.admin-voltar,a.voltar,a.btn-voltar');if(voltar&&window.history.length>1){event.preventDefault();mostrar();window.history.back();return;}if(urlInterna(link)){mostrar();}},true);document.addEventListener('submit',function(event){var formulario=event.target;if(formulario&&formulario.target!=='_blank'){window.setTimeout(function(){if(!event.defaultPrevented){mostrar();}},0);}},true);window.addEventListener('pageshow',esconder);window.addEventListener('load',function(){window.setTimeout(esconder,120);});})();</script>
+HTML;
+        return preg_replace('/<\/body>/i', $loading . $script . '</body>', $saida, 1) ?? $saida;
     });
 }
