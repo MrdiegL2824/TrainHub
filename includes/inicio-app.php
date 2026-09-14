@@ -71,6 +71,7 @@ try {
         .icone-lista{width:20px;height:24px;padding:0;border:0;border-radius:4px;background:transparent;color:#dbe2ee;text-align:center;line-height:24px;font-size:16px;cursor:pointer}
         .icone-lista:hover,.icone-lista:focus-visible{color:#fff;background:rgba(255,255,255,.08);outline:1px solid rgba(219,226,238,.35);outline-offset:1px}
         .grade-areas.layout-lista{grid-template-columns:1fr;gap:10px}
+        .item-area[hidden],.item-curso[hidden]{display:none!important}
     </style>
 </head>
 <body>
