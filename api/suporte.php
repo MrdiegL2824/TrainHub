@@ -11,13 +11,26 @@ if ($usuarioId < 1 && usuarioLogado()) {
 }
 $mensagem = trim((string) ($_POST['mensagem'] ?? ''));
 
-if ($usuarioId < 1 || $mensagem === '') {
+if ($usuarioId < 1 || $mensagem === '' || mb_strlen($mensagem) > 2000) {
     redirecionar('index.php?erro=suporte_campos');
 }
 
-$stmt = $pdo->prepare("INSERT INTO pedidos_suporte (usuario_id, mensagem) VALUES (?, ?)");
-$stmt->execute([$usuarioId, $mensagem]);
-$stmt = $pdo->prepare("INSERT INTO atividades (usuario_id, acao, descricao) VALUES (?, 'enviou um pedido de suporte', 'pedido de suporte')");
-$stmt->execute([$usuarioId]);
-unset($_SESSION['usuario_bloqueado_id'], $_SESSION['usuario_bloqueado_nome'], $_SESSION['usuario_bloqueado_email']);
-redirecionar('index.php?suporte=enviado');
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pedidos_suporte WHERE usuario_id = ? AND status <> 'resolvido'");
+    $stmt->execute([$usuarioId]);
+    if ((int) $stmt->fetchColumn() === 0) {
+        $pdo->beginTransaction();
+        $stmt = $pdo->prepare('INSERT INTO pedidos_suporte (usuario_id, mensagem) VALUES (?, ?)');
+        $stmt->execute([$usuarioId, $mensagem]);
+        registrarAtividade($pdo, $usuarioId, 'enviou um pedido de suporte', 'acesso bloqueado');
+        $pdo->commit();
+    }
+    unset($_SESSION['usuario_bloqueado_id'], $_SESSION['usuario_bloqueado_nome'], $_SESSION['usuario_bloqueado_email']);
+    redirecionar('index.php?suporte=enviado');
+} catch (Throwable $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    registrarErro($pdo, 'pedido de suporte', $e);
+    redirecionar('index.php?erro=erro_interno');
+}

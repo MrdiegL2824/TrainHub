@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/includes/competencias-app.php'; exit; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

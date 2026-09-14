@@ -2,17 +2,19 @@
 require_once 'config.php';
 if (usuarioLogado()) { redirecionar('inicio.php'); }
 $mensagens = [
-    'credenciais_invalidas' => 'E-mail ou senha inválidos.',
-    'campos_vazios' => 'Informe e-mail e senha.',
+    'credenciais_invalidas' => 'E-mail, nome de usuário ou senha inválidos.',
+    'campos_vazios' => 'Informe e-mail ou nome de usuário e senha.',
     'solicitacao' => 'A solicitação expirou. Tente novamente.',
     'erro_interno' => 'Não foi possível concluir o login agora.',
     'suporte_campos' => 'Escreva uma mensagem para solicitar suporte.',
+    'muitas_tentativas' => 'Muitas tentativas de acesso. Aguarde 15 minutos e tente novamente.',
 ];
 $mensagensSucesso = [
     'enviado' => 'Pedido de suporte enviado ao administrador.',
+    'redefinida' => 'Senha redefinida. Você já pode entrar com a nova senha.',
 ];
 $erro = $mensagens[$_GET['erro'] ?? ''] ?? '';
-$sucesso = $mensagensSucesso[$_GET['suporte'] ?? ''] ?? '';
+$sucesso = $mensagensSucesso[$_GET['suporte'] ?? $_GET['senha'] ?? ''] ?? '';
 $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
 ?><!DOCTYPE html>
 <html lang="pt-BR">
@@ -25,7 +27,7 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; background: #02060e url('assets/background-TrainHub.png') center center / cover no-repeat; overflow: hidden; }
         .tela-login { position: relative; min-height: 100vh; background: linear-gradient(90deg, rgba(0, 5, 15, .22), transparent 58%); }
-        .marca { position: absolute; top: 22px; left: 25px; margin: 0; color: #123b91; font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -2px; text-shadow: 0 2px 2px #02050c, 0 0 12px rgba(21, 88, 205, .3); }
+        .marca { position: absolute; top: 20px; left: 25px; width: 96px; height: 62px; object-fit: contain; object-position: left center; }
         .cartao-login { position: absolute; top: 27%; left: 25px; width: min(390px, calc(100vw - 50px)); padding: 32px 28px 35px; border: 1px solid #124071; border-radius: 17px; background: rgba(2, 10, 20, .66); box-shadow: 0 8px 25px rgba(0, 0, 0, .28); }
         .campo { display: block; width: 100%; height: 44px; margin: 0 0 19px; padding: 6px 15px; border: 0; border-radius: 14px; outline: none; background: #fff; color: #203d82; font-size: 16px; }
         .campo::placeholder { color: #25468c; opacity: 1; }
@@ -43,6 +45,8 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
         .modal p { margin: 0 0 18px; color: #c7d2e7; line-height: 1.5; }
         .modal textarea { display: block; width: 100%; min-height: 110px; margin-bottom: 14px; padding: 11px; border: 0; border-radius: 10px; resize: vertical; }
         .modal button { width: 100%; padding: 11px; border: 0; border-radius: 9px; background: #3159b2; color: #fff; font-weight: 700; cursor: pointer; }
+        .modal-suporte { display: none; }
+        .modal-suporte.ativo { display: block; }
         .modal-fechar { display: block; margin-top: 13px; color: #9db2d8; text-align: center; font-size: 13px; text-decoration: none; }
         @media (max-width: 600px) {
             body { background-position: 63% center; overflow: auto; }
@@ -53,7 +57,7 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
 </head>
 <body>
     <main class="tela-login">
-        <h1 class="marca">TrainHub</h1>
+        <img class="marca" src="assets/logo.png" alt="TrainHub">
         <section class="cartao-login" aria-label="Formulário de login">
             <?php if ($erro !== ''): ?><p class="aviso-erro"><?php echo esc($erro); ?></p><?php endif; ?>
             <?php if ($sucesso !== ''): ?><p class="aviso-sucesso"><?php echo esc($sucesso); ?></p><?php endif; ?>
@@ -66,7 +70,7 @@ $bloqueado = !empty($_SESSION['usuario_bloqueado_id']);
             </form>
             <span class="cadastro-restrito">O cadastro é realizado somente pelo administrador.</span>
         </section>
-        <?php if ($bloqueado): ?><div class="modal-fundo"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-bloqueio"><h2 id="titulo-bloqueio">Acesso bloqueado</h2><p>Seu acesso ao TrainHub está bloqueado no momento. Se acredita que isso aconteceu por engano, solicite suporte à equipe.</p><form action="api/suporte.php" method="POST"><?php echo csrfInput(); ?><textarea name="mensagem" required placeholder="Explique sua solicitação ao administrador..."></textarea><button type="submit">Enviar solicitação de suporte</button></form><a class="modal-fechar" href="logout.php">Voltar para o login</a></section></div><?php endif; ?>
+        <?php if ($bloqueado): ?><div class="modal-fundo"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-bloqueio"><div id="aviso-bloqueio"><h2 id="titulo-bloqueio">Acesso bloqueado</h2><p>Seu acesso ao TrainHub está bloqueado no momento. Se acredita que isso aconteceu por engano, solicite suporte à equipe.</p><button id="abrir-suporte" type="button">Solicitar suporte</button></div><div class="modal-suporte" id="formulario-suporte"><h2>Pedido de suporte</h2><p>Explique o que aconteceu para que o administrador possa analisar seu acesso.</p><form action="api/suporte.php" method="POST"><?php echo csrfInput(); ?><textarea name="mensagem" required maxlength="2000" placeholder="Escreva sua mensagem para o administrador..."></textarea><button type="submit">Enviar solicitação</button></form></div><a class="modal-fechar" href="logout.php">Voltar para o login</a></section></div><script>document.getElementById('abrir-suporte').addEventListener('click',function(){document.getElementById('aviso-bloqueio').hidden=true;document.getElementById('formulario-suporte').classList.add('ativo');document.querySelector('#formulario-suporte textarea').focus();});</script><?php endif; ?>
     </main>
 </body>
 </html>

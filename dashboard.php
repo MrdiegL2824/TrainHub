@@ -39,7 +39,7 @@ try {
         'usuarios' => (int) $pdo->query('SELECT COUNT(*) FROM usuarios WHERE ativo = TRUE')->fetchColumn(),
         'treinamentos' => (int) $pdo->query('SELECT COUNT(*) FROM treinamentos')->fetchColumn(),
         'aulas' => (int) $pdo->query('SELECT COUNT(*) FROM aulas')->fetchColumn(),
-        'pendentes' => (int) $pdo->query("SELECT COUNT(*) FROM treinamentos WHERE status = 'rascunho'")->fetchColumn(),
+        'pendentes' => (int) $pdo->query("SELECT COUNT(*) FROM pedidos_suporte WHERE status <> 'resolvido'")->fetchColumn(),
         'materiais' => (int) $pdo->query('SELECT COUNT(*) FROM materiais')->fetchColumn(),
     ];
 
@@ -63,11 +63,24 @@ try {
          ORDER BY s.criado_em DESC
          LIMIT 5"
     )->fetchAll();
+    $avaliacaoMedia = (float) $pdo->query('SELECT COALESCE(AVG(nota), 0) FROM tentativas_avaliacao WHERE finalizado_em IS NOT NULL')->fetchColumn();
+    $avaliacoesRecentes = $pdo->query(
+        "SELECT u.nome, av.titulo, ta.nota, ta.aprovado
+         FROM tentativas_avaliacao ta
+         JOIN usuarios u ON u.id = ta.usuario_id
+         JOIN avaliacoes av ON av.id = ta.avaliacao_id
+         WHERE ta.finalizado_em IS NOT NULL
+         ORDER BY ta.finalizado_em DESC LIMIT 3"
+    )->fetchAll();
+    $totalErros = (int) $pdo->query('SELECT COUNT(*) FROM logs_erros')->fetchColumn();
 } catch (Throwable $e) {
-    error_log('TrainHub admin dashboard query failed: ' . $e->getMessage());
+    registrarErro($pdo, 'dashboard administrativo', $e);
     $metricas = array_fill_keys(array_keys($tiposMetricas), 0);
     $atividades = [];
     $suportes = [];
+    $avaliacaoMedia = 0;
+    $avaliacoesRecentes = [];
+    $totalErros = 0;
 }
 
 $atividadesPorDia = [];
@@ -401,6 +414,13 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             background: var(--painel);
         }
 
+        .avaliacao-media { display:block; width:max-content; margin:8px auto; padding:4px 11px; border-radius:12px; background:var(--escuro); color:#ffdc36; font-weight:700; }
+        .avaliacao-lista { display:grid; gap:5px; padding:0 7px 8px; }
+        .avaliacao-item { padding:7px 8px; border-radius:8px; background:var(--escuro); font-size:10px; line-height:12px; }
+        .avaliacao-item strong, .avaliacao-item span { display:block; }
+        .avaliacao-item span { color:var(--secundario); }
+        .avaliacao-vazio { padding:22px 10px; color:var(--secundario); font-size:11px; text-align:center; }
+
         .suporte-box,
         .admin-grid > .espaco-livre {
             align-self: start;
@@ -529,7 +549,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
         <a class="admin-logo" href="inicio.php" aria-label="Voltar para o início">
             <img src="assets/logo.png" alt="TrainHub">
         </a>
-        <a class="admin-avatar" href="logout.php" aria-label="Sair"></a>
+        <a class="admin-avatar" href="perfil.php" aria-label="Abrir perfil"></a>
     </header>
 
     <main class="admin-pagina">
@@ -581,12 +601,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
                                 <strong><?php echo esc($suporte['nome']); ?></strong>
                                 <span class="suporte-mensagem"><?php echo esc($suporte['mensagem']); ?></span>
                                 <span class="suporte-email"><?php echo esc($suporte['email']); ?></span>
-                                <form method="post">
-                                    <?php echo csrfInput(); ?>
-                                    <input type="hidden" name="acao" value="resolver_suporte">
-                                    <input type="hidden" name="suporte_id" value="<?php echo (int) $suporte['id']; ?>">
-                                    <button class="suporte-resolver" type="submit">Marcar como resolvido</button>
-                                </form>
+                                <a class="suporte-resolver" href="suportes.php?status=pendente">Abrir pedido</a>
                             </article>
                         <?php endforeach; ?>
                     </div>
@@ -594,12 +609,16 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             </section>
 
             <div class="admin-box espaco-livre" aria-hidden="true"></div>
-            <div class="admin-box espaco-livre" aria-hidden="true"></div>
+            <section class="admin-box suporte-box">
+                <h2 class="box-titulo">Avaliações</h2>
+                <span class="avaliacao-media"><?php echo number_format($avaliacaoMedia, 1, ',', ''); ?> ★</span>
+                <?php if (!$avaliacoesRecentes): ?><p class="avaliacao-vazio">Nenhuma avaliação respondida.</p><?php else: ?><div class="avaliacao-lista"><?php foreach ($avaliacoesRecentes as $avaliacao): ?><article class="avaliacao-item"><strong><?php echo esc($avaliacao['nome']); ?></strong><span><?php echo esc($avaliacao['titulo']); ?></span><span><?php echo number_format((float) $avaliacao['nota'], 1, ',', ''); ?> · <?php echo valorBooleano($avaliacao['aprovado']) ? 'Aprovado' : 'Reprovado'; ?></span></article><?php endforeach; ?></div><?php endif; ?>
+            </section>
 
             <section class="admin-box rodape-box" aria-label="Log de erros">
-                <div class="erros-link">Log de erros</div>
+                <a class="erros-link" href="logs-erros.php">Log de erros<?php if ($totalErros > 0): ?><span class="erro-badge"><?php echo $totalErros; ?></span><?php endif; ?></a>
                 <a class="rodape-vazio cadastro-admin-link" href="admin-cadastrar-usuario.php" aria-label="Cadastrar usuário">Cadastrar cliente</a>
-                <div class="rodape-vazio" aria-hidden="true"></div>
+                <a class="rodape-vazio cadastro-admin-link" href="avaliacoes.php" aria-label="Gerenciar avaliações">Avaliações</a>
             </section>
         </section>
     </main>

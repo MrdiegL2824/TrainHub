@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/includes/areas-app.php';
+exit;
 require_once 'config.php';
 exigirLogin();
 $mensagem = '';

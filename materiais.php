@@ -2,9 +2,9 @@
 declare(strict_types=1);
 
 require_once 'config.php';
-exigirLogin();
+exigirAdmin();
 
-$ehAdmin = temPerfil('admin');
+$ehAdmin = true;
 $erro = '';
 $mensagem = '';
 $aulaSelecionada = (int) ($_GET['aula_id'] ?? $_POST['aula_id'] ?? 0);
@@ -149,7 +149,7 @@ $materiais = $pdo->query(
 <body>
     <header class="topo">
         <a href="<?php echo $ehAdmin ? 'dashboard.php' : 'inicio.php'; ?>" aria-label="Voltar"><img class="logo" src="assets/logo.png" alt="TrainHub"></a>
-        <a class="sair" href="logout.php">Sair</a>
+        <a class="sair" href="perfil.php">Perfil</a>
     </header>
     <main>
         <a class="voltar" href="<?php echo $ehAdmin ? 'dashboard.php' : 'inicio.php'; ?>" aria-label="Voltar">←</a>

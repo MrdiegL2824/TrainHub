@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/includes/treinamentos-app.php';
+exit;
 require_once 'config.php'; exigirLogin(); $mensagem = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validarCsrf($_POST['csrf_token'] ?? null)) { $mensagem = 'Sessão expirada. Atualize a página e tente novamente.'; }

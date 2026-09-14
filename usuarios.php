@@ -107,6 +107,9 @@ $usuarios = $pdo->query('SELECT id, nome, email, perfil, ativo, criado_em FROM u
         .novo { padding:11px 16px; border-radius:9px; background:var(--azul); color:#fff; font-weight:700; text-decoration:none; white-space:nowrap; }
         .novo:hover, .acao:hover { background:#436bc7; }
         .aviso { margin:0 0 18px; padding:11px 13px; border-radius:9px; font-weight:700; }
+        .filtros { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+        .filtros input, .filtros select { min-height:38px; border:0; border-radius:8px; padding:8px 11px; background:var(--escuro); color:var(--texto); font:inherit; }
+        .filtros input { flex:1 1 250px; }
         .erro { background:#7e2228; }
         .sucesso { background:#1d714b; }
         .lista { display:grid; gap:12px; }
@@ -130,7 +133,7 @@ $usuarios = $pdo->query('SELECT id, nome, email, perfil, ativo, criado_em FROM u
 <body>
     <header class="topo">
         <a href="dashboard.php" aria-label="Voltar ao dashboard"><img class="logo" src="assets/logo.png" alt="TrainHub"></a>
-        <a class="sair" href="logout.php">Sair</a>
+        <a class="sair" href="perfil.php">Perfil</a>
     </header>
     <main>
         <a class="voltar" href="dashboard.php" aria-label="Voltar">←</a>
@@ -143,20 +146,21 @@ $usuarios = $pdo->query('SELECT id, nome, email, perfil, ativo, criado_em FROM u
         </div>
         <?php if ($erro !== ''): ?><p class="aviso erro"><?php echo esc($erro); ?></p><?php endif; ?>
         <?php if ($mensagem !== ''): ?><p class="aviso sucesso"><?php echo esc($mensagem); ?></p><?php endif; ?>
+        <div class="filtros"><input id="buscar-usuario" type="search" placeholder="Pesquisar nome ou e-mail"><select id="filtrar-status"><option value="">Todos os status</option><option value="ativo">Ativos</option><option value="bloqueado">Bloqueados</option></select></div>
         <?php if (!$usuarios): ?>
             <div class="vazio">Nenhum usuário cadastrado.</div>
         <?php else: ?>
             <section class="lista" aria-label="Lista de usuários">
                 <?php foreach ($usuarios as $usuario): ?>
                     <?php $ativo = usuarioEstaAtivo($usuario['ativo']); ?>
-                    <article class="usuario">
+                    <article class="usuario item-usuario" data-status="<?php echo $ativo ? 'ativo' : 'bloqueado'; ?>" data-busca="<?php echo esc(mb_strtolower($usuario['nome'] . ' ' . ($usuario['email'] ?? ''))); ?>">
                         <div class="usuario-campo"><small>Nome de usuário</small><strong><?php echo esc($usuario['nome']); ?></strong></div>
                         <div class="usuario-campo"><small>E-mail</small><span><?php echo esc($usuario['email'] ?? ''); ?></span></div>
                         <div class="usuario-campo"><small>Perfil</small><span><?php echo esc($usuario['perfil']); ?></span></div>
                         <div class="usuario-campo"><small>Status</small><span><?php echo $ativo ? 'Ativo' : 'Bloqueado'; ?></span></div>
                         <div class="usuario-acoes">
                             <?php if ((int) $usuario['id'] !== (int) $_SESSION['usuario_id']): ?>
-                                <form method="post">
+                                <form method="post" onsubmit="return confirm('<?php echo $ativo ? 'Bloquear o acesso deste usuário?' : 'Desbloquear o acesso deste usuário?'; ?>')">
                                     <?php echo csrfInput(); ?>
                                     <input type="hidden" name="acao" value="alternar_status">
                                     <input type="hidden" name="usuario_id" value="<?php echo (int) $usuario['id']; ?>">
@@ -178,5 +182,6 @@ $usuarios = $pdo->query('SELECT id, nome, email, perfil, ativo, criado_em FROM u
             </section>
         <?php endif; ?>
     </main>
+    <script>function filtrarUsuarios(){var termo=document.getElementById('buscar-usuario').value.toLocaleLowerCase('pt-BR');var status=document.getElementById('filtrar-status').value;document.querySelectorAll('.item-usuario').forEach(function(item){item.hidden=!(item.dataset.busca.includes(termo)&&(!status||item.dataset.status===status));});}document.getElementById('buscar-usuario').addEventListener('input',filtrarUsuarios);document.getElementById('filtrar-status').addEventListener('change',filtrarUsuarios);</script>
 </body>
 </html>

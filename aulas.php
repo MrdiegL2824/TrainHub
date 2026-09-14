@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/includes/aulas-app.php';
+exit;
 require_once 'config.php';
 exigirLogin();
 

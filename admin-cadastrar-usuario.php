@@ -111,7 +111,7 @@ $usuariosRecentes = $pdo->query(
 <body>
     <header class="topo">
         <a href="dashboard.php" aria-label="Voltar ao dashboard"><img class="logo" src="assets/logo.png" alt="TrainHub"></a>
-        <a class="avatar" href="logout.php" aria-label="Sair">A</a>
+        <a class="avatar" href="perfil.php" aria-label="Abrir perfil">A</a>
     </header>
     <main>
         <a class="voltar" href="dashboard.php" aria-label="Voltar">←</a>

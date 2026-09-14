@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/includes/treinamento-detalhe-app.php';
+exit;
 require_once 'config.php';
 exigirLogin();
 $id = (int) ($_GET['id'] ?? 0);
