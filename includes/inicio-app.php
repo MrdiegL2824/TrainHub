@@ -72,6 +72,8 @@ try {
         .icone-lista:hover,.icone-lista:focus-visible{color:#fff;background:rgba(255,255,255,.08);outline:1px solid rgba(219,226,238,.35);outline-offset:1px}
         .grade-areas.layout-lista{grid-template-columns:1fr;gap:10px}
         .item-area[hidden],.item-curso[hidden]{display:none!important}
+        .curso-capa{height:165px}
+        .area-capa{height:74px}
     </style>
 </head>
 <body>
