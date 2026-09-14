@@ -453,5 +453,17 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (!headers_sent()) {
-    ob_start();
+    ob_start(static function (string $saida): string {
+        if (stripos($saida, '</body>') === false || (
+            stripos($saida, 'th-back') === false
+            && stripos($saida, 'admin-voltar') === false
+            && stripos($saida, 'class="voltar"') === false
+            && stripos($saida, 'class="btn-voltar"') === false
+        )) {
+            return $saida;
+        }
+
+        $script = '<script>(function(){document.addEventListener("click",function(event){var link=event.target.closest("a.th-back,a.admin-voltar,a.voltar,a.btn-voltar");if(!link||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey){return;}if(window.history.length>1){event.preventDefault();window.history.back();}});})();</script>';
+        return preg_replace('/<\/body>/i', $script . '</body>', $saida, 1) ?? $saida;
+    });
 }
