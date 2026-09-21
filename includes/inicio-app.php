@@ -80,6 +80,15 @@ try {
         .item-area[hidden],.item-curso[hidden]{display:none!important}
         .curso-capa{height:165px}
         .area-capa{height:74px}
+        .cursos-secao,.areas{display:flex;flex-direction:column;overflow:hidden}
+        .cursos-secao{height:345px}
+        .areas{height:clamp(430px,68vh,650px)}
+        .cursos,.cursos.layout-lista{flex:1;min-height:0;display:grid;grid-template-columns:none;grid-template-rows:minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:calc((100% - 60px)/3);overflow-x:auto;overflow-y:hidden;padding:0 2px 10px;overscroll-behavior:contain;scrollbar-gutter:stable;scroll-snap-type:x proximity}
+        .cursos .curso{scroll-snap-align:start}
+        .cursos.layout-lista{grid-auto-columns:calc((100% - 30px)/2)}
+        .grade-areas{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;padding:0 8px 10px 0;overscroll-behavior:contain;scrollbar-gutter:stable}
+        @media(max-width:850px){.cursos,.cursos.layout-lista{grid-auto-columns:calc((100% - 30px)/2)}}
+        @media(max-width:560px){.cursos-secao{height:300px}.areas{height:clamp(460px,72vh,650px)}.cursos,.cursos.layout-lista{grid-auto-columns:minmax(260px,82%)}}
     </style>
 </head>
 <body>
@@ -124,6 +133,17 @@ async function sincronizarFavoritoPendente(){const pendente=lerFavoritoPendente(
 function atualizarLayoutCursos(){const lista=document.getElementById('lista-cursos');const controle=document.querySelector('.cursos-secao .icone-lista');if(!controle){return;}const listaAtiva=lista.classList.contains('layout-lista');controle.textContent=listaAtiva?'\u2637':'\u25A6';controle.setAttribute('role','button');controle.tabIndex=0;controle.setAttribute('aria-label',listaAtiva?'Mostrar cursos em grade':'Mostrar cursos em lista');controle.setAttribute('aria-pressed',listaAtiva?'true':'false');}
 function atualizarLayoutAreas(){const lista=document.getElementById('lista-areas');const controle=document.querySelector('.areas .icone-lista');if(!controle){return;}const listaAtiva=lista.classList.contains('layout-lista');controle.textContent=listaAtiva?'\u2637':'\u25A6';controle.setAttribute('aria-label',listaAtiva?'Mostrar áreas em grade':'Mostrar áreas em lista');controle.setAttribute('aria-pressed',listaAtiva?'true':'false');}
 const listaCursos=document.getElementById('lista-cursos');const layoutCursosSalvo=window.localStorage.getItem('trainhub-cursos-layout');if(layoutCursosSalvo==='lista'){listaCursos.classList.add('layout-lista');}const controleCursos=document.querySelector('.cursos-secao .icone-lista');if(controleCursos){atualizarLayoutCursos();controleCursos.addEventListener('click',()=>{listaCursos.classList.toggle('layout-lista');window.localStorage.setItem('trainhub-cursos-layout',listaCursos.classList.contains('layout-lista')?'lista':'grade');atualizarLayoutCursos();});controleCursos.addEventListener('keydown',evento=>{if(evento.key==='Enter'||evento.key===' '){evento.preventDefault();controleCursos.click();}});}const filtroAreas=document.getElementById('filtro-areas');const filtroSalvo=window.localStorage.getItem('trainhub-areas-filtro');if(filtroSalvo==='favorito'){filtroAreas.value='favorito';}const listaAreas=document.getElementById('lista-areas');const layoutSalvo=window.localStorage.getItem('trainhub-areas-layout');if(layoutSalvo==='lista'){listaAreas.classList.add('layout-lista');}const controleLayout=document.querySelector('.areas .icone-lista');if(controleLayout){controleLayout.setAttribute('role','button');controleLayout.tabIndex=0;controleLayout.addEventListener('click',()=>{listaAreas.classList.toggle('layout-lista');window.localStorage.setItem('trainhub-areas-layout',listaAreas.classList.contains('layout-lista')?'lista':'grade');atualizarLayoutAreas();});controleLayout.addEventListener('keydown',evento=>{if(evento.key==='Enter'||evento.key===' '){evento.preventDefault();controleLayout.click();}});}document.querySelectorAll('.favorito-form').forEach(formulario=>{formulario.addEventListener('submit',async evento=>{evento.preventDefault();if(formulario.dataset.enviando==='1'){return;}const botao=formulario.querySelector('.estrela');const eraFavorito=botao.classList.contains('ativa');const novaFavorita=!eraFavorito;const acao=novaFavorita?'adicionar':'remover';const pendenteId=salvarFavoritoPendente(formulario,acao);const dadosEnvio=new FormData(formulario);dadosEnvio.set('acao',acao);formulario.dataset.enviando='1';botao.disabled=true;atualizarFavorito(formulario,novaFavorita);try{const resposta=await fetch(formulario.action,{method:'POST',body:dadosEnvio,headers:{Accept:'application/json'},credentials:'same-origin',keepalive:true});const dados=await resposta.json();if(!resposta.ok||!dados.sucesso){throw new Error('favorito');}limparFavoritoPendente(pendenteId);}catch(erro){atualizarFavorito(formulario,eraFavorito);limparFavoritoPendente(pendenteId);}finally{formulario.dataset.enviando='0';botao.disabled=false;}});});document.getElementById('busca-cursos').addEventListener('input',filtrarCursos);document.getElementById('status-cursos').addEventListener('change',filtrarCursos);document.getElementById('busca-areas').addEventListener('input',filtrarAreas);filtroAreas.addEventListener('change',()=>{window.localStorage.setItem('trainhub-areas-filtro',filtroAreas.value);filtrarAreas();});atualizarLayoutCursos();atualizarLayoutAreas();filtrarCursos();filtrarAreas();sincronizarFavoritoPendente();
+</script>
+<script>
+const trainhubListaCursos = document.getElementById('lista-cursos');
+if (trainhubListaCursos) {
+    trainhubListaCursos.addEventListener('wheel', evento => {
+        if (Math.abs(evento.deltaY) > Math.abs(evento.deltaX) && trainhubListaCursos.scrollWidth > trainhubListaCursos.clientWidth) {
+            evento.preventDefault();
+            trainhubListaCursos.scrollLeft += evento.deltaY;
+        }
+    }, { passive: false });
+}
 </script>
 </body>
 </html>
