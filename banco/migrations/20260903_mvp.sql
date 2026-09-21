@@ -115,7 +115,7 @@ CREATE INDEX IF NOT EXISTS idx_tentativas_login_data ON tentativas_login(identif
 CREATE INDEX IF NOT EXISTS idx_logs_erros_data ON logs_erros(criado_em DESC);
 
 INSERT INTO schema_migrations (versao)
-VALUES (2026090301)
+VALUES (2026090302)
 ON CONFLICT (versao) DO NOTHING;
 
 COMMIT;

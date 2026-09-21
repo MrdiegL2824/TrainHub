@@ -33,6 +33,13 @@ $tiposMetricas = [
     'pendentes' => 'Pendentes',
     'materiais' => 'Materiais',
 ];
+$rotasMetricas = [
+    'usuarios' => 'usuarios.php',
+    'treinamentos' => 'treinamentos.php',
+    'aulas' => 'aulas.php',
+    'pendentes' => 'suportes.php?status=pendente',
+    'materiais' => 'materiais.php',
+];
 
 try {
     $resumo = $pdo->query(
@@ -617,7 +624,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
 
         <nav class="metricas" aria-label="Gerenciamento administrativo">
             <?php foreach ($tiposMetricas as $tipo => $rotulo): ?>
-                <a class="metrica" href="admin-gerenciar.php?tipo=<?php echo esc($tipo); ?>">
+                <a class="metrica" href="<?php echo esc($rotasMetricas[$tipo]); ?>">
                     <strong><?php echo esc($rotulo); ?></strong>
                     <span><?php echo (int) ($metricas[$tipo] ?? 0); ?></span>
                 </a>

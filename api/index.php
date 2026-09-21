@@ -32,7 +32,6 @@ $pages = [
     '/logout.php' => 'logout.php',
     '/api/index.php' => 'index.php',
     '/api/auth.php' => 'api/auth.php',
-    '/api/google-auth.php' => 'api/google-auth.php',
     '/api/suporte.php' => 'api/suporte.php',
     '/api/progresso.php' => 'api/progresso.php',
     '/api/favorito.php' => 'api/favorito.php',
