@@ -35,35 +35,50 @@ $tiposMetricas = [
 ];
 
 try {
+    $resumo = $pdo->query(
+        "SELECT
+            (SELECT COUNT(*) FROM usuarios WHERE ativo = TRUE) AS usuarios,
+            (SELECT COUNT(*) FROM treinamentos) AS treinamentos,
+            (SELECT COUNT(*) FROM aulas) AS aulas,
+            (SELECT COUNT(*) FROM pedidos_suporte WHERE status <> 'resolvido') AS pendentes,
+            (SELECT COUNT(*) FROM materiais) AS materiais,
+            (SELECT COALESCE(AVG(nota), 0) FROM tentativas_avaliacao WHERE finalizado_em IS NOT NULL) AS avaliacao_media,
+            (SELECT COUNT(*) FROM logs_erros) AS total_erros"
+    )->fetch() ?: [];
     $metricas = [
-        'usuarios' => (int) $pdo->query('SELECT COUNT(*) FROM usuarios WHERE ativo = TRUE')->fetchColumn(),
-        'treinamentos' => (int) $pdo->query('SELECT COUNT(*) FROM treinamentos')->fetchColumn(),
-        'aulas' => (int) $pdo->query('SELECT COUNT(*) FROM aulas')->fetchColumn(),
-        'pendentes' => (int) $pdo->query("SELECT COUNT(*) FROM pedidos_suporte WHERE status <> 'resolvido'")->fetchColumn(),
-        'materiais' => (int) $pdo->query('SELECT COUNT(*) FROM materiais')->fetchColumn(),
+        'usuarios' => (int) ($resumo['usuarios'] ?? 0),
+        'treinamentos' => (int) ($resumo['treinamentos'] ?? 0),
+        'aulas' => (int) ($resumo['aulas'] ?? 0),
+        'pendentes' => (int) ($resumo['pendentes'] ?? 0),
+        'materiais' => (int) ($resumo['materiais'] ?? 0),
     ];
 
-    $atividades = $pdo->query(
-        "SELECT u.nome, a.acao, a.descricao AS item, a.criado_em
-         FROM atividades a
-         JOIN usuarios u ON u.id = a.usuario_id
+    $eventos = $pdo->query(
+        "(SELECT 'atividade' AS tipo, u.nome, a.acao, a.descricao AS item, a.criado_em,
+                 NULL AS email, NULL AS mensagem, NULL AS status
+          FROM atividades a
+          JOIN usuarios u ON u.id = a.usuario_id
+          ORDER BY a.criado_em DESC
+          LIMIT 8)
          UNION ALL
-         SELECT u.nome, 'criou o treinamento' AS acao, t.titulo AS item, t.criado_em
-         FROM treinamentos t
-         JOIN usuarios u ON u.id = t.criado_por
-         ORDER BY criado_em DESC
-         LIMIT 8"
+         (SELECT 'treinamento' AS tipo, u.nome, 'criou o treinamento' AS acao, t.titulo AS item, t.criado_em,
+                 NULL AS email, NULL AS mensagem, NULL AS status
+          FROM treinamentos t
+          JOIN usuarios u ON u.id = t.criado_por
+          ORDER BY t.criado_em DESC
+          LIMIT 8)
+         UNION ALL
+         (SELECT 'suporte' AS tipo, u.nome, 'enviou um pedido de suporte' AS acao, s.mensagem AS item, s.criado_em,
+                 u.email, s.mensagem, s.status
+          FROM pedidos_suporte s
+          JOIN usuarios u ON u.id = s.usuario_id
+          ORDER BY s.criado_em DESC
+          LIMIT 5)
+         ORDER BY criado_em DESC"
     )->fetchAll();
-
-    $suportes = $pdo->query(
-        "SELECT s.id, u.nome, u.email, s.mensagem, s.status, s.criado_em
-         FROM pedidos_suporte s
-         JOIN usuarios u ON u.id = s.usuario_id
-         WHERE s.status = 'pendente'
-         ORDER BY s.criado_em DESC
-         LIMIT 5"
-    )->fetchAll();
-    $avaliacaoMedia = (float) $pdo->query('SELECT COALESCE(AVG(nota), 0) FROM tentativas_avaliacao WHERE finalizado_em IS NOT NULL')->fetchColumn();
+    $atividades = array_values(array_filter($eventos, static fn (array $evento): bool => $evento['tipo'] !== 'suporte'));
+    $suportes = array_values(array_filter($eventos, static fn (array $evento): bool => $evento['tipo'] === 'suporte' && $evento['status'] === 'pendente'));
+    $avaliacaoMedia = (float) ($resumo['avaliacao_media'] ?? 0);
     $avaliacoesRecentes = $pdo->query(
         "SELECT u.nome, av.titulo, ta.nota, ta.aprovado
          FROM tentativas_avaliacao ta
@@ -72,7 +87,7 @@ try {
          WHERE ta.finalizado_em IS NOT NULL
          ORDER BY ta.finalizado_em DESC LIMIT 3"
     )->fetchAll();
-    $totalErros = (int) $pdo->query('SELECT COUNT(*) FROM logs_erros')->fetchColumn();
+    $totalErros = (int) ($resumo['total_erros'] ?? 0);
 } catch (Throwable $e) {
     registrarErro($pdo, 'dashboard administrativo', $e);
     $metricas = array_fill_keys(array_keys($tiposMetricas), 0);

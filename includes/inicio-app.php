@@ -13,24 +13,23 @@ $imagensAreas = [
 ];
 
 try {
-    garantirMatriculasPublicadas($pdo, $usuarioId);
     $sqlCursos = "SELECT t.id, t.titulo, t.descricao, t.carga_horaria, t.status, a.nome AS area_nome,
                          m.ultima_aula_id,
                          m.iniciado_em,
                          COUNT(DISTINCT CASE WHEN au.status = 'publicado' THEN au.id END) AS total_aulas,
                          COUNT(DISTINCT CASE WHEN au.status = 'publicado' AND p.concluida = TRUE THEN au.id END) AS aulas_concluidas
-                  FROM matriculas m
-                  JOIN treinamentos t ON t.id = m.treinamento_id
+                  FROM treinamentos t
                   JOIN areas a ON a.id = t.area_id
+                  LEFT JOIN matriculas m ON m.treinamento_id = t.id AND m.usuario_id = ?
                   LEFT JOIN aulas au ON au.treinamento_id = t.id
                   LEFT JOIN progresso_aulas p ON p.aula_id = au.id AND p.usuario_id = m.usuario_id
-                  WHERE m.usuario_id = ?";
+                  WHERE t.status = 'publicado'";
     $parametros = [$usuarioId];
     if ($areaSelecionada > 0) {
         $sqlCursos .= ' AND t.area_id = ?';
         $parametros[] = $areaSelecionada;
     }
-    $sqlCursos .= ' GROUP BY t.id, t.titulo, t.descricao, t.carga_horaria, t.status, a.nome, m.ultima_aula_id, m.iniciado_em ORDER BY m.iniciado_em DESC, t.titulo LIMIT 6';
+    $sqlCursos .= ' GROUP BY t.id, t.titulo, t.descricao, t.carga_horaria, t.status, t.criado_em, a.nome, m.ultima_aula_id, m.iniciado_em ORDER BY COALESCE(m.iniciado_em, t.criado_em) DESC, t.titulo LIMIT 6';
     $stmt = $pdo->prepare($sqlCursos);
     $stmt->execute($parametros);
     $cursos = $stmt->fetchAll();

@@ -14,7 +14,6 @@ if (!$aula || (!temPerfil('admin') && ($aula['status'] !== 'publicado' || $aula[
     exit('Aula não encontrada.');
 }
 
-garantirMatriculasPublicadas($pdo, $usuarioId);
 $stmt = $pdo->prepare('UPDATE matriculas SET ultima_aula_id = ? WHERE usuario_id = ? AND treinamento_id = ?');
 $stmt->execute([$id, $usuarioId, (int) $aula['treinamento_id']]);
 $stmt = $pdo->prepare('SELECT id, nome, arquivo, tipo FROM materiais WHERE aula_id = ? ORDER BY nome');
