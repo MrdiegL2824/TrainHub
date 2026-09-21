@@ -10,24 +10,39 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !validarCsrf($_POST['csrf_token'] ?
 
 $areaId = (int) ($_POST['area_id'] ?? 0);
 $usuarioId = (int) $_SESSION['usuario_id'];
+$acao = (string) ($_POST['acao'] ?? '');
+$responderJson = str_contains(strtolower((string) ($_SERVER['HTTP_ACCEPT'] ?? '')), 'application/json');
 
 try {
-    $stmt = $pdo->prepare('SELECT id FROM areas WHERE id = ? LIMIT 1');
-    $stmt->execute([$areaId]);
-    if (!$stmt->fetchColumn()) {
-        redirecionar('inicio.php');
+    if ($areaId < 1 || !in_array($acao, ['adicionar', 'remover'], true)) {
+        throw new InvalidArgumentException('Favorito inválido.');
     }
-    $stmt = $pdo->prepare('SELECT 1 FROM favoritos_areas WHERE usuario_id = ? AND area_id = ?');
-    $stmt->execute([$usuarioId, $areaId]);
-    if ($stmt->fetchColumn()) {
+
+    if ($acao === 'remover') {
         $stmt = $pdo->prepare('DELETE FROM favoritos_areas WHERE usuario_id = ? AND area_id = ?');
         $stmt->execute([$usuarioId, $areaId]);
     } else {
-        $stmt = $pdo->prepare('INSERT INTO favoritos_areas (usuario_id, area_id) VALUES (?, ?)');
+        if (bancoPostgres($pdo)) {
+            $stmt = $pdo->prepare('INSERT INTO favoritos_areas (usuario_id, area_id) VALUES (?, ?) ON CONFLICT (usuario_id, area_id) DO NOTHING');
+        } else {
+            $stmt = $pdo->prepare('INSERT IGNORE INTO favoritos_areas (usuario_id, area_id) VALUES (?, ?)');
+        }
         $stmt->execute([$usuarioId, $areaId]);
+    }
+
+    if ($responderJson) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['sucesso' => true, 'favorito' => $acao === 'adicionar'], JSON_UNESCAPED_UNICODE);
+        exit;
     }
 } catch (Throwable $e) {
     registrarErro($pdo, 'favorito de area', $e);
+    if ($responderJson) {
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['sucesso' => false], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 }
 
 redirecionar('inicio.php#areas');
