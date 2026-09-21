@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS treinamentos (
     titulo VARCHAR(200) NOT NULL,
     descricao TEXT,
     carga_horaria NUMERIC(6, 1) NOT NULL DEFAULT 0,
+    data_inicio DATE,
+    data_fim DATE,
     status VARCHAR(20) NOT NULL DEFAULT 'rascunho' CHECK (status IN ('rascunho', 'publicado', 'arquivado')),
     criado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP

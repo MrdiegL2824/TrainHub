@@ -124,6 +124,8 @@ CREATE TABLE `treinamentos` (
   `titulo` varchar(200) NOT NULL,
   `descricao` text DEFAULT NULL,
   `carga_horaria` decimal(6,1) NOT NULL DEFAULT 0.0,
+  `data_inicio` date DEFAULT NULL,
+  `data_fim` date DEFAULT NULL,
   `status` enum('rascunho','publicado','arquivado') NOT NULL DEFAULT 'rascunho',
   `criado_em` datetime NOT NULL DEFAULT current_timestamp(),
   `atualizado_em` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()

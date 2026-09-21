@@ -14,6 +14,7 @@ $pages = [
     '/recuperar-senha.php' => 'recuperar-senha.php',
     '/redefinir-senha.php' => 'redefinir-senha.php',
     '/inicio.php' => 'inicio.php',
+    '/area-detalhe.php' => 'area-detalhe.php',
     '/dashboard.php' => 'dashboard.php',
     '/admin-dashboard.php' => 'admin-dashboard.php',
     '/admin-gerenciar.php' => 'admin-gerenciar.php',

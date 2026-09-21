@@ -5,6 +5,9 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
     aplicado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE treinamentos ADD COLUMN IF NOT EXISTS data_inicio DATE;
+ALTER TABLE treinamentos ADD COLUMN IF NOT EXISTS data_fim DATE;
+
 CREATE TABLE IF NOT EXISTS login_tokens (
     selector VARCHAR(64) PRIMARY KEY,
     usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
@@ -116,6 +119,10 @@ CREATE INDEX IF NOT EXISTS idx_logs_erros_data ON logs_erros(criado_em DESC);
 
 INSERT INTO schema_migrations (versao)
 VALUES (2026090302)
+ON CONFLICT (versao) DO NOTHING;
+
+INSERT INTO schema_migrations (versao)
+VALUES (2026090303)
 ON CONFLICT (versao) DO NOTHING;
 
 COMMIT;
