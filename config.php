@@ -455,6 +455,7 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!headers_sent()) {
     ob_start(static function (string $saida): string {
         $saida = preg_replace('/<img(?=[^>]*src="assets\/areas\/)/i', '<img loading="lazy" decoding="async"', $saida) ?? $saida;
+        $saida = str_replace('assets/logo.png', 'assets/logo.png?v=20260921', $saida);
         if (stripos($saida, '</body>') === false) {
             return $saida;
         }
