@@ -314,6 +314,7 @@ foreach (array_slice($atividades, 0, 8) as $atividade) {
             min-height: 34px;
             align-items: center;
             justify-content: center;
+            margin: 0;
             padding: 7px 10px;
             background: var(--escuro);
             font-size: 18px;
