@@ -10,12 +10,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !validarCsrf($_POST['csrf_token'] ?
 
 $areaId = (int) ($_POST['area_id'] ?? 0);
 $usuarioId = (int) $_SESSION['usuario_id'];
-$acao = (string) ($_POST['acao'] ?? '');
+$acao = (string) ($_POST['acao'] ?? 'alternar');
 $responderJson = str_contains(strtolower((string) ($_SERVER['HTTP_ACCEPT'] ?? '')), 'application/json');
 
 try {
-    if ($areaId < 1 || !in_array($acao, ['adicionar', 'remover'], true)) {
+    if ($areaId < 1 || !in_array($acao, ['adicionar', 'remover', 'alternar'], true)) {
         throw new InvalidArgumentException('Favorito inválido.');
+    }
+
+    if ($acao === 'alternar') {
+        $stmt = $pdo->prepare('SELECT 1 FROM favoritos_areas WHERE usuario_id = ? AND area_id = ?');
+        $stmt->execute([$usuarioId, $areaId]);
+        $acao = $stmt->fetchColumn() ? 'remover' : 'adicionar';
     }
 
     if ($acao === 'remover') {
