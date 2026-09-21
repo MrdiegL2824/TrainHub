@@ -82,7 +82,7 @@ try {
         .area-capa{height:74px}
         .cursos-secao,.areas{display:flex;flex-direction:column;overflow:hidden}
         .cursos-secao{height:345px}
-        .areas{height:clamp(430px,68vh,650px)}
+        .areas{height:clamp(430px,55vh,560px)}
         .cursos,.cursos.layout-lista{flex:1;min-height:0;display:grid;grid-template-columns:none;grid-template-rows:minmax(0,1fr);grid-auto-flow:column;grid-auto-columns:calc((100% - 60px)/3);overflow-x:auto;overflow-y:hidden;padding:0 2px 10px;overscroll-behavior:contain;scrollbar-gutter:stable;scroll-snap-type:x proximity}
         .cursos .curso{scroll-snap-align:start}
         .cursos.layout-lista{grid-auto-columns:calc((100% - 30px)/2)}
