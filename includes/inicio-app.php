@@ -12,6 +12,10 @@ $imagensAreas = [
     'Automação' => 'automacao.png', 'Eletrônica' => 'eletronica.png', 'Gestão' => 'gestao.png',
 ];
 
+if (!temPerfil('admin')) {
+    garantirMatriculasPublicadas($pdo, $usuarioId);
+}
+
 try {
     $sqlCursos = "SELECT t.id, t.titulo, t.descricao, t.carga_horaria, t.status, a.nome AS area_nome,
                          m.ultima_aula_id,

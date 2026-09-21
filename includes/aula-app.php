@@ -6,6 +6,9 @@ exigirLogin();
 
 $id = (int) ($_GET['id'] ?? 0);
 $usuarioId = (int) $_SESSION['usuario_id'];
+if (!temPerfil('admin')) {
+    garantirMatriculasPublicadas($pdo, $usuarioId);
+}
 $stmt = $pdo->prepare('SELECT a.*, t.id AS treinamento_id, t.titulo AS treinamento_titulo, t.status AS treinamento_status FROM aulas a JOIN treinamentos t ON t.id = a.treinamento_id WHERE a.id = ? LIMIT 1');
 $stmt->execute([$id]);
 $aula = $stmt->fetch();
